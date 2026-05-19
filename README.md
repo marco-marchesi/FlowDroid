@@ -40,9 +40,18 @@ OEM background-killing (Samsung One UI, MIUI, etc.).
 ## Screens
 
 The app has four top-level tabs: **Flows**, **Health**, **Logs**, **Setup**.
-Open `mockups.html` in a browser for full visual mockups (dark Material 3,
-412×892 viewport) of every surface plus six in-progress redesign ideas for
-the Flow Editor.
+
+![FlowDroid mockups — all twelve phone screens](docs/screenshots/hero.png)
+
+**Section A** (top two rows) shows the live app — Flows list & empty state,
+Flow editor baseline, Health, Logs, Setup. **Section B** (bottom two rows)
+is the in-progress redesign of the Flow editor: rail-canvas layout,
+notification-trigger assist sheet, magic-text variable picker, nested
+logic blocks (`If`/`else`, `Loop`), a dry-run drawer, and the action
+family quick-picker.
+
+🔗 **[Open the full live mockups in your browser →](https://raw.githack.com/marco-marchesi/FlowDroid/main/mockups.html)**
+&nbsp; (rendered HTML, no install)
 
 ---
 
