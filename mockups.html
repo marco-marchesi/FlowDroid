@@ -1,0 +1,1729 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>FlowDroid — Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #11141A;
+  --surface: #1A1E26;
+  --surface-2: #232932;
+  --surface-v: #42474E;
+  --on-surface: #E2E2E6;
+  --on-surface-v: #C2C7CF;
+  --outline: #8C9199;
+  --outline-v: #42474E;
+  --primary: #B9C7DC;
+  --primary-c: #394759;
+  --on-prim-c: #D7E3F8;
+  --green: #4CAF7B;
+  --amber: #E0A030;
+  --red: #E4554A;
+  --unknown: #8C9199;
+  --f-notif: #4CAF7B;
+  --f-apps: #5B8DEF;
+  --f-ui: #B580E0;
+  --f-time: #E0A030;
+  --f-net: #4FC8E0;
+  --f-vars: #E07AB5;
+  --f-files: #A4C842;
+  --f-logic: #B9C7DC;
+  --phone-w: 412px;
+  --phone-h: 892px;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: #0a0c10;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--on-surface);
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  padding: 48px 32px 80px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.page h1 {
+  font-size: 36px; font-weight: 700; letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+.page .lede {
+  color: var(--on-surface-v);
+  font-size: 14px; margin: 0 0 36px;
+}
+.page h2 {
+  font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  margin: 56px 0 6px;
+  color: var(--on-surface);
+}
+.page h2 + .lede { margin-bottom: 24px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, var(--phone-w));
+  gap: 56px 56px;
+}
+.frame-wrap { display: flex; flex-direction: column; gap: 12px; width: var(--phone-w); }
+.frame-label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.4px;
+  color: var(--on-surface-v); text-transform: uppercase;
+}
+.frame-label .name { color: var(--primary); }
+
+/* ---------- Phone ---------- */
+.phone {
+  width: var(--phone-w); height: var(--phone-h);
+  background: var(--bg);
+  border-radius: 36px;
+  overflow: hidden;
+  position: relative;
+  display: flex; flex-direction: column;
+  box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  font-family: 'Inter', sans-serif;
+}
+.phone .body {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.phone .content {
+  flex: 1; padding: 16px;
+  display: flex; flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+}
+
+/* ---------- Status bar ---------- */
+.status-bar {
+  height: 28px; padding: 0 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 600;
+  color: var(--on-surface);
+  flex-shrink: 0;
+}
+.status-bar .right { display: flex; gap: 6px; color: var(--on-surface-v); font-weight: 400; font-size: 11px; }
+
+/* ---------- App bars ---------- */
+.app-bar {
+  height: 56px;
+  padding: 0 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.app-bar .title { font-size: 22px; font-weight: 600; }
+.icon-btn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 20px;
+  color: var(--on-surface);
+  font-size: 18px;
+}
+
+/* Editor hero header */
+.hero {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary-c) 60%, transparent) 0%, transparent 100%);
+  padding: 0 4px 12px 4px;
+  flex-shrink: 0;
+}
+.hero .row1 {
+  height: 56px; padding: 0 8px 0 4px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hero .row1 .left { display: flex; align-items: center; gap: 4px; }
+.hero .row1 .title { display: flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 600; }
+.hero .row1 .title .pencil { font-size: 13px; color: var(--on-surface-v); }
+.hero .row1 .right { display: flex; align-items: center; gap: 12px; }
+.hero .row2 {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 16px 0;
+  font-size: 12px;
+  color: var(--on-surface-v);
+}
+.hero .row2 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.hero .row2 .dot.off { background: var(--outline); }
+.hero .row2 .label-on { color: var(--green); font-weight: 500; }
+.hero .row2 .label-off { color: var(--on-surface-v); font-weight: 500; }
+.hero .row2 .sep { color: var(--on-surface-v); }
+.hero .row2 .spacer { flex: 1; }
+.hero .row2 .test-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 28px; padding: 0 12px 0 10px;
+  border-radius: 14px;
+  background: var(--primary); color: var(--primary-c);
+  font-size: 12px; font-weight: 600;
+}
+.hero .row2 .test-pill .glyph { font-size: 10px; }
+
+/* Switch */
+.switch {
+  width: 44px; height: 26px;
+  border-radius: 13px;
+  background: var(--surface-v);
+  padding: 3px;
+  display: flex; align-items: center;
+}
+.switch.on { background: var(--primary); justify-content: flex-end; }
+.switch.off { justify-content: flex-start; }
+.switch .knob {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--outline);
+}
+.switch.on .knob { background: var(--primary-c); }
+
+/* Save button */
+.btn-save {
+  height: 36px; padding: 0 14px;
+  border-radius: 18px;
+  background: var(--primary-c); color: var(--on-prim-c);
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 500;
+}
+.btn-save .dirty-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px;
+}
+.card.sv { background: var(--surface-v); }
+.card.tinted-green { background: color-mix(in srgb, var(--green) 18%, transparent); }
+.card.tinted-amber-bg { background: color-mix(in srgb, var(--amber) 20%, transparent); }
+
+/* ---------- Flow list row ---------- */
+.flow-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 16px;
+}
+.flow-row .meta { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.flow-row .name { font-size: 16px; font-weight: 600; }
+.flow-row .sub { font-size: 12px; color: var(--on-surface-v); }
+.flow-row .actions { font-size: 11px; color: var(--on-surface-v); }
+
+/* ---------- FAB ---------- */
+.fab {
+  height: 56px; padding: 0 24px 0 20px;
+  border-radius: 16px;
+  background: var(--primary-c); color: var(--on-prim-c);
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 16px; font-weight: 500;
+  align-self: flex-end;
+  margin-top: auto;
+  box-shadow: 0 6px 16px -4px rgba(0,0,0,0.4);
+}
+.fab .plus { font-size: 22px; font-weight: 700; }
+
+/* ---------- Bottom nav ---------- */
+.bottom-nav {
+  height: 80px;
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.bottom-nav .nav-item {
+  flex: 1;
+  padding: 10px 0 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: var(--on-surface-v);
+}
+.bottom-nav .pill {
+  width: 64px; height: 32px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.bottom-nav .nav-item.sel { color: var(--on-surface); }
+.bottom-nav .nav-item.sel .pill { background: var(--primary-c); color: var(--on-prim-c); }
+.bottom-nav .nav-item .label { font-size: 11px; }
+.bottom-nav .nav-item.sel .label { font-weight: 500; }
+
+/* ---------- Rail steps ---------- */
+.rail-step {
+  display: flex; gap: 12px; align-items: stretch;
+}
+.rail-step .gutter {
+  width: 28px;
+  display: flex; flex-direction: column; align-items: center;
+}
+.rail-step .gutter .line {
+  width: 2px; flex: 1;
+  background: var(--outline-v);
+  min-height: 8px;
+}
+.rail-step .gutter .node {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  color: var(--bg);
+  flex-shrink: 0;
+}
+.rail-step .card-outer {
+  flex: 1; min-width: 0;
+  background: var(--surface);
+  border-radius: 14px;
+  display: flex;
+  overflow: hidden;
+}
+.rail-step .stripe {
+  width: 4px;
+  align-self: stretch;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+.rail-step .step-inner {
+  flex: 1; min-width: 0;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.rail-step .step-hdr {
+  display: flex; align-items: center; gap: 8px;
+}
+.rail-step .idx-pill {
+  width: 22px; height: 22px;
+  border-radius: 11px;
+  background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+.rail-step .step-title { font-size: 14px; font-weight: 600; flex: 1; }
+.rail-step .chev { font-size: 14px; color: var(--on-surface-v); }
+.rail-step .sub { font-size: 12px; color: var(--on-surface-v); }
+.rail-step .mono { font-size: 12px; color: var(--on-surface-v); font-family: 'Roboto Mono', monospace; }
+.rail-step .err-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); }
+
+/* "Add action" affordance */
+.add-row {
+  display: flex; gap: 12px; align-items: center;
+}
+.add-row .gutter {
+  width: 28px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.add-row .gutter .line { width: 2px; height: 8px; background: var(--outline-v); }
+.add-row .gutter .plus-node {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--outline);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary);
+  font-size: 16px; font-weight: 700;
+}
+.add-row .btn {
+  flex: 1; height: 40px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--outline-v);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  color: var(--primary);
+  font-size: 13px; font-weight: 500;
+}
+
+/* ---------- Section labels in body ---------- */
+.section-lbl {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2px;
+}
+.section-lbl .label {
+  font-size: 11px; font-weight: 600; letter-spacing: 1.2px;
+  color: var(--on-surface-v);
+}
+.section-lbl .action { font-size: 11px; font-weight: 500; color: var(--primary); }
+.section-lbl .meta { font-size: 11px; color: var(--on-surface-v); }
+
+/* ---------- Chips ---------- */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 10px;
+  border-radius: 12px;
+  font-size: 11px; font-weight: 500;
+}
+.chip-filled { background: var(--primary-c); color: var(--on-prim-c); }
+.chip-outline { background: transparent; border: 1px solid var(--outline); color: var(--on-surface-v); }
+.chip-stat { font-weight: 600; }
+
+/* Family pills (small variant) */
+.fam-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 36px; padding: 0 12px;
+  border-radius: 18px;
+  font-size: 12px; font-weight: 500;
+}
+
+/* Variable chip (inline, mono) */
+.var-chip {
+  display: inline-flex; align-items: center;
+  height: 20px; padding: 0 6px;
+  border-radius: 10px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  background: color-mix(in srgb, var(--f-vars) 22%, transparent);
+  color: var(--f-vars);
+}
+.var-chip.notif { background: color-mix(in srgb, var(--f-notif) 22%, transparent); color: var(--f-notif); }
+.var-chip.vars { background: color-mix(in srgb, var(--f-vars) 22%, transparent); color: var(--f-vars); }
+
+/* ---------- Sheets & scrims ---------- */
+.scrim {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+.scrim.light { background: rgba(0,0,0,0.3); }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: var(--surface);
+  border-radius: 22px 22px 0 0;
+  padding-top: 12px;
+  display: flex; flex-direction: column;
+  z-index: 2;
+  box-shadow: 0 -10px 30px -5px rgba(0,0,0,0.5);
+}
+.sheet .handle {
+  width: 40px; height: 4px;
+  background: var(--outline);
+  border-radius: 2px;
+  margin: 0 auto;
+}
+.sheet .sheet-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px 4px;
+}
+.sheet .sheet-hdr .ttl { font-size: 18px; font-weight: 600; }
+.sheet .sheet-hdr .close { font-size: 16px; color: var(--on-surface-v); }
+.sheet .sheet-sub {
+  padding: 4px 16px 8px;
+  text-align: center;
+  font-size: 12px; color: var(--on-surface-v);
+}
+
+/* Search field */
+.search {
+  height: 40px; border-radius: 20px;
+  background: var(--surface-2);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 14px;
+  font-size: 13px; color: var(--on-surface-v);
+  margin: 4px 16px 8px;
+}
+
+/* Sample notification rows (sheet) */
+.sample-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px;
+}
+.sample-row.sel { background: color-mix(in srgb, var(--f-notif) 12%, transparent); }
+.sample-row .pkg-ic {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--on-surface-v);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700;
+  flex-shrink: 0;
+}
+.sample-row.sel .pkg-ic { background: var(--f-notif); color: white; }
+.sample-row .mid { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.sample-row .mid .t { font-size: 13px; font-weight: 600; }
+.sample-row .mid .b { font-size: 11px; color: var(--on-surface-v); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sample-row .right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.sample-row .right .tm { font-size: 11px; color: var(--on-surface-v); }
+.sample-row .right .pk { font-size: 10px; color: var(--on-surface-v); font-family: 'Roboto Mono', monospace; }
+
+/* Primary CTA */
+.btn-primary {
+  height: 48px; border-radius: 24px;
+  background: var(--primary); color: var(--primary-c);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600;
+}
+.btn-outline {
+  height: 44px; border-radius: 22px;
+  background: transparent; border: 1px solid var(--outline);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 500;
+  color: var(--primary);
+}
+
+/* ---------- Logic blocks ---------- */
+.logic-block {
+  border: 1px solid var(--f-logic);
+  background: color-mix(in srgb, var(--f-logic) 8%, transparent);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.logic-block .l-hdr {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+}
+.logic-block .l-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--bg);
+  background: var(--f-logic);
+  flex-shrink: 0;
+}
+.logic-block .l-meta { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.logic-block .l-title { font-size: 14px; font-weight: 600; }
+.logic-block .l-cond {
+  display: flex; align-items: center; gap: 4px;
+  flex-wrap: wrap;
+  font-size: 12px; color: var(--on-surface-v);
+  font-family: 'Roboto Mono', monospace;
+}
+.logic-block .l-cond .lit {
+  display: inline-flex; align-items: center; height: 20px; padding: 0 6px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  font-size: 11px;
+}
+.logic-block .branch {
+  background: var(--surface);
+  padding: 8px 14px 10px;
+}
+.logic-block .branch.else { background: var(--surface-2); padding-bottom: 12px; }
+.logic-block .branch .b-label {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  margin: 0 0 6px;
+}
+.logic-block .branch .b-label .sq { width: 8px; height: 8px; border-radius: 2px; }
+.logic-block.amber {
+  border-color: var(--f-time);
+  background: color-mix(in srgb, var(--f-time) 8%, transparent);
+}
+.logic-block.amber .l-icon { background: var(--f-time); }
+.logic-block .counter {
+  display: inline-flex; align-items: center;
+  height: 22px; padding: 0 8px;
+  border-radius: 11px;
+  font-size: 11px; font-weight: 700;
+}
+.nest-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 4px;
+}
+.nest-step .ind { width: 2px; height: 32px; }
+.nest-step .nst-ic {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--bg); font-weight: 700;
+  flex-shrink: 0;
+}
+.nest-step .nst-meta { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.nest-step .nst-meta .t { font-size: 12px; font-weight: 500; }
+.nest-step .nst-meta .m { font-size: 11px; color: var(--on-surface-v); font-family: 'Roboto Mono', monospace; }
+
+/* ---------- Dry-run drawer ---------- */
+.run-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.run-row .ric {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: var(--bg);
+  flex-shrink: 0;
+}
+.run-row .rmeta { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.run-row .rmeta .rt { font-size: 13px; font-weight: 500; }
+.run-row .rmeta .rs { font-size: 11px; font-family: 'Roboto Mono', monospace; color: var(--green); }
+.run-row .rright { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.run-row .rbadge {
+  display: inline-flex; align-items: center;
+  height: 22px; padding: 0 8px;
+  border-radius: 11px;
+  font-size: 10px; font-weight: 600;
+  background: color-mix(in srgb, var(--green) 22%, transparent); color: var(--green);
+}
+.run-row .relap { font-size: 10px; color: var(--on-surface-v); }
+.var-row { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.var-row .eq { color: var(--on-surface-v); }
+.var-row .val { font-family: 'Roboto Mono', monospace; color: var(--on-surface); }
+.payload-row {
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px;
+}
+.payload-row .lbl { font-size: 11px; color: var(--on-surface-v); }
+.payload-row .nm { font-weight: 500; flex: 1; }
+.payload-row .chg { font-size: 11px; font-weight: 500; color: var(--primary); }
+
+/* ---------- Family picker tiles ---------- */
+.fam-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 0 16px 4px;
+}
+.fam-tile {
+  background: var(--surface-2);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+  min-height: 96px;
+}
+.fam-tile .fic {
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700;
+}
+.fam-tile .ft { font-size: 13px; font-weight: 600; }
+.fam-tile .fh {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 10px; color: var(--on-surface-v);
+}
+.fam-tile .fh .ct { font-weight: 500; }
+.sug-strip { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 16px 16px; }
+
+/* ---------- HTTP / form fields ---------- */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--on-surface-v); }
+.field-input {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 40px;
+  display: flex; align-items: center;
+  font-size: 13px;
+}
+.field-input.mono { font-family: 'Roboto Mono', monospace; font-size: 12px; }
+.field-multiline {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+}
+.mono-line { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+.mono-line .punct { white-space: pre; }
+.insert-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 26px; padding: 0 10px;
+  border-radius: 13px;
+  background: var(--f-vars); color: var(--bg);
+  font-size: 11px; font-weight: 600;
+  align-self: flex-end;
+  margin-top: 4px;
+}
+.insert-btn .glyph { font-weight: 700; }
+
+/* Regex tester */
+.regex-box {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 40px; border-radius: 8px; background: var(--surface-2);
+  padding: 0 8px 0 12px;
+}
+.regex-box .reg { font-family: 'Roboto Mono', monospace; font-size: 13px; color: var(--on-surface); }
+.regex-box .try {
+  width: 32px; height: 28px; border-radius: 14px;
+  background: var(--primary); color: var(--primary-c);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+
+/* "Used sample" pill */
+.sample-pill {
+  display: flex; align-items: center; gap: 8px;
+  height: 32px; padding: 0 12px 0 10px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--f-notif) 18%, transparent);
+  font-size: 12px;
+}
+.sample-pill .lbl { color: var(--on-surface-v); font-size: 11px; }
+.sample-pill .nm { color: var(--f-notif); font-weight: 500; flex: 1; }
+.sample-pill .pencil { color: var(--on-surface-v); font-size: 11px; }
+
+/* Variable popover */
+.var-popover {
+  position: absolute;
+  left: 24px; right: 24px;
+  background: var(--surface-2);
+  border: 1px solid var(--outline-v);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  z-index: 3;
+  box-shadow: 0 14px 30px -10px rgba(0,0,0,0.6);
+}
+.var-popover .pop-lbl {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  color: var(--on-surface-v);
+}
+.var-popover .pop-search {
+  height: 34px; border-radius: 17px;
+  background: var(--surface);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px;
+  font-size: 12px; color: var(--on-surface-v);
+}
+.var-popover .grp { display: flex; flex-direction: column; gap: 4px; }
+.var-popover .grp .gl { font-size: 10px; font-weight: 500; color: var(--on-surface-v); letter-spacing: 0.8px; }
+.var-popover .vrow { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+.var-popover .vrow .smp { font-size: 11px; color: var(--on-surface-v); }
+.pointer-arrow {
+  position: absolute;
+  width: 14px; height: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--outline-v);
+  border-right: none; border-bottom: none;
+  transform: rotate(45deg);
+  z-index: 3;
+}
+
+/* ---------- Empty state ---------- */
+.empty-card {
+  background: var(--surface-v);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  text-align: center;
+}
+.empty-card .ic {
+  width: 56px; height: 56px; border-radius: 28px;
+  background: var(--primary-c); color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.empty-card .ttl { font-size: 16px; font-weight: 600; }
+.empty-card .sub { font-size: 13px; color: var(--on-surface-v); }
+.empty-card .cta {
+  height: 40px; padding: 0 16px; border-radius: 20px;
+  border: 1px solid var(--outline);
+  color: var(--primary);
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 14px; font-weight: 500;
+}
+
+/* ---------- Health overall + status ---------- */
+.overall {
+  background: color-mix(in srgb, var(--green) 18%, transparent);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex; align-items: center; gap: 16px;
+}
+.overall .big {
+  width: 48px; height: 48px; border-radius: 24px;
+  background: var(--green); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 700;
+  flex-shrink: 0;
+}
+.overall .meta { display: flex; flex-direction: column; gap: 4px; }
+.overall .meta .t { font-size: 20px; font-weight: 600; }
+.overall .meta .s { font-size: 12px; color: var(--on-surface-v); }
+
+.svc-list { background: var(--surface); border-radius: 16px; padding: 4px 0; }
+.svc-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  height: 64px;
+}
+.svc-row .si {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: white; font-weight: 700;
+  flex-shrink: 0;
+}
+.svc-row .smid { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.svc-row .smid .t { font-size: 14px; font-weight: 500; }
+.svc-row .smid .s { font-size: 12px; color: var(--on-surface-v); }
+.svc-row .stail { font-size: 12px; color: var(--on-surface-v); }
+.svc-sep { height: 1px; background: var(--surface-v); margin: 0 16px; }
+
+.stats {
+  background: var(--surface); border-radius: 16px; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.stats .lbl { font-size: 13px; font-weight: 600; }
+.stats .row { display: flex; justify-content: space-between; }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stat .v { font-size: 22px; font-weight: 600; }
+.stat .l { font-size: 11px; color: var(--on-surface-v); }
+
+.disc-row {
+  background: var(--surface-v);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex; align-items: center; gap: 12px;
+}
+.disc-row .di { font-size: 16px; color: var(--amber); }
+.disc-row .dm { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.disc-row .dm .t { font-size: 13px; }
+.disc-row .dm .o { font-size: 11px; color: var(--on-surface-v); font-family: 'Roboto Mono', monospace; }
+.disc-row .ago { font-size: 11px; color: var(--on-surface-v); }
+
+/* ---------- Logs ---------- */
+.tabs {
+  display: flex; height: 48px;
+  flex-shrink: 0;
+}
+.tab {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding-top: 12px;
+  gap: 6px;
+  font-size: 13px; color: var(--on-surface-v); font-weight: 500;
+}
+.tab.active { color: var(--primary); font-weight: 600; }
+.tab .underline { width: 60px; height: 3px; border-radius: 2px; background: transparent; }
+.tab.active .underline { background: var(--primary); }
+
+.chips-row { display: flex; gap: 8px; padding-bottom: 4px; flex-wrap: wrap; }
+
+.notif-entry {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.notif-entry .top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.notif-entry .top .left { display: flex; align-items: center; gap: 10px; }
+.notif-entry .pkg-ic {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 12px; font-weight: 700;
+}
+.notif-entry .pkg-name { font-size: 12px; font-weight: 500; color: var(--on-surface-v); }
+.notif-entry .tm { font-size: 11px; color: var(--on-surface-v); }
+.notif-entry .title { font-size: 14px; font-weight: 600; }
+.notif-entry .body { font-size: 12px; color: var(--on-surface-v); }
+
+/* ---------- Setup wizard ---------- */
+.intro .lbl { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; color: var(--on-surface-v); }
+.intro .desc { font-size: 12px; color: var(--on-surface-v); margin-top: 4px; }
+
+.step-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.step-card .top { display: flex; align-items: center; gap: 12px; }
+.step-card .sic {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 14px; font-weight: 700;
+  flex-shrink: 0;
+}
+.step-card .smid { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.step-card .stitle { font-size: 15px; font-weight: 600; }
+.step-card .sdesc { font-size: 12px; color: var(--on-surface-v); }
+.step-card .actions { display: flex; justify-content: flex-end; gap: 8px; }
+.btn-filled-sm {
+  height: 36px; padding: 0 16px;
+  background: var(--primary-c); color: var(--on-prim-c);
+  border-radius: 18px;
+  display: inline-flex; align-items: center;
+  font-size: 13px; font-weight: 500;
+}
+.btn-outline-sm {
+  height: 36px; padding: 0 14px;
+  background: transparent;
+  border: 1px solid var(--outline);
+  color: var(--primary);
+  border-radius: 18px;
+  display: inline-flex; align-items: center;
+  font-size: 13px; font-weight: 500;
+}
+
+/* ---------- Misc helpers ---------- */
+.spacer { flex: 1; }
+.row { display: flex; align-items: center; gap: 8px; }
+.col { display: flex; flex-direction: column; }
+.muted { color: var(--on-surface-v); }
+.bold { font-weight: 600; }
+.mono { font-family: 'Roboto Mono', monospace; }
+.tiny { font-size: 11px; }
+.sm { font-size: 12px; }
+
+/* simple banner used inside flow editor */
+.dis-banner {
+  background: color-mix(in srgb, var(--amber) 22%, transparent);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.dis-banner .t { font-size: 13px; font-weight: 500; color: var(--amber); }
+.dis-banner .d { font-size: 12px; color: var(--on-surface-v); }
+
+/* logic block ELSE collapsed line */
+.collapsed-line { font-size: 10px; color: var(--on-surface-v); }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>FlowDroid — Mockups</h1>
+  <p class="lede">Dark Material 3, 412×892 viewport. Tokens map 1:1 to <code>com/flowdroid/ui/theme/Color.kt</code>. Two sections: the main app surfaces, and the flow-editor redesign ideas.</p>
+
+  <h2>Section A — Main app screens</h2>
+  <p class="lede">The original surfaces — Flows list, empty state, the baseline flow editor, Health, Logs, Setup.</p>
+  <section class="grid">
+
+    <!-- ====================== 01 Flows ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">01</span> · Flows (list)</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="app-bar">
+            <div class="title">Flows</div>
+            <div class="icon-btn">⋮</div>
+          </div>
+          <div class="content">
+            <div class="flow-row">
+              <div class="meta">
+                <div class="name">Echo notification</div>
+                <div class="sub">Notification from com.example.app where title matches ^Echo.*</div>
+                <div class="actions">1 action</div>
+              </div>
+              <div class="switch on"><div class="knob"></div></div>
+            </div>
+            <div class="flow-row">
+              <div class="meta">
+                <div class="name">Echo to log</div>
+                <div class="sub">Notification from any app</div>
+                <div class="actions">2 actions</div>
+              </div>
+              <div class="switch off"><div class="knob"></div></div>
+            </div>
+            <div class="fab"><span class="plus">+</span> New flow</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 02 Flows empty ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">02</span> · Flows (empty)</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="app-bar"><div class="title">Flows</div><div></div></div>
+          <div class="content" style="justify-content:center; padding-top:80px;">
+            <div class="empty-card">
+              <div class="ic">◇</div>
+              <div class="ttl">No flows yet. Tap + to create one.</div>
+              <div class="sub">Best for: custom notification reactions and webhook automations.</div>
+              <div class="cta">+ Create your first flow</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 03 Flow editor (baseline) ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">03</span> · Flow editor (baseline)</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="app-bar">
+            <div class="row">
+              <div class="icon-btn">←</div>
+              <div class="title" style="font-size:20px;">Edit flow</div>
+            </div>
+            <div class="btn-save">Save</div>
+          </div>
+          <div class="content">
+            <div class="card" style="padding:14px; gap:6px; display:flex; flex-direction:column;">
+              <div class="tiny muted bold">Name</div>
+              <div style="font-size:16px;">Echo notification</div>
+            </div>
+            <div class="card" style="display:flex; flex-direction:column; gap:10px;">
+              <div class="row" style="justify-content:space-between;">
+                <div class="tiny muted bold" style="letter-spacing:1px;">TRIGGER</div>
+                <div class="chip chip-filled">Notification</div>
+              </div>
+              <div>Package: com.example.app</div>
+              <div class="mono sm muted">Title regex: ^Echo.*</div>
+            </div>
+            <div class="section-lbl">
+              <span class="label">ACTIONS</span>
+              <span class="action" style="border:1px solid var(--outline-v); padding:4px 10px; border-radius:14px;">+ Add</span>
+            </div>
+            <div class="card" style="padding:14px;">
+              <div class="row" style="gap:10px;">
+                <div style="width:28px; height:28px; border-radius:14px; background:var(--primary-c); color:var(--on-prim-c); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:12px;">1</div>
+                <div class="col">
+                  <div style="font-size:14px; font-weight:500;">Click action button</div>
+                  <div class="mono sm muted">matching ^Acknowledge$</div>
+                </div>
+              </div>
+            </div>
+            <div class="dis-banner">
+              <div class="t">⚠  Flow disabled</div>
+              <div class="d">Enable on the flows list to start matching.</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 04 Health ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">04</span> · Health</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="app-bar"><div class="title">Health</div><div></div></div>
+          <div class="content">
+            <div class="overall">
+              <div class="big">✓</div>
+              <div class="meta">
+                <div class="t">All systems green</div>
+                <div class="s">Foreground service &amp; listener up. 137 notifications today.</div>
+              </div>
+            </div>
+            <div class="svc-list">
+              <div class="svc-row">
+                <div class="si" style="background:var(--green);">✓</div>
+                <div class="smid"><div class="t">Foreground service</div><div class="s">Running</div></div>
+                <div class="stail">up 2h 20m</div>
+              </div>
+              <div class="svc-sep"></div>
+              <div class="svc-row">
+                <div class="si" style="background:var(--green);">✓</div>
+                <div class="smid"><div class="t">Notification listener</div><div class="s">Running</div></div>
+                <div class="stail">up 4h 10m</div>
+              </div>
+              <div class="svc-sep"></div>
+              <div class="svc-row">
+                <div class="si" style="background:var(--red);">✕</div>
+                <div class="smid"><div class="t">Accessibility service</div><div class="s">Permission missing</div></div>
+                <div class="stail"></div>
+              </div>
+            </div>
+            <div class="stats">
+              <div class="lbl">Last 24h</div>
+              <div class="row" style="justify-content:space-between;">
+                <div class="stat"><div class="v">137</div><div class="l">Notifications</div></div>
+                <div class="stat"><div class="v">2</div><div class="l">Rebinds</div></div>
+                <div class="stat"><div class="v">2</div><div class="l">Disconnects</div></div>
+              </div>
+            </div>
+            <div class="section-lbl"><span class="label">Disconnect journal</span><span class="meta">2 recent</span></div>
+            <div class="disc-row">
+              <div class="di">⚠</div>
+              <div class="dm"><div class="t">Listener disconnected</div><div class="o">outcome: REBIND_REQUESTED</div></div>
+              <div class="ago">1m</div>
+            </div>
+            <div class="disc-row">
+              <div class="di">⚠</div>
+              <div class="dm"><div class="t">Listener disconnected</div><div class="o">outcome: REBIND_REQUESTED</div></div>
+              <div class="ago">2h</div>
+            </div>
+            <div class="btn-primary" style="background:var(--primary-c); color:var(--on-prim-c); margin-top:auto; gap:8px;">▶ &nbsp;Run self-test</div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item sel"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 05 Logs ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">05</span> · Logs</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="app-bar"><div class="title">Logs</div><div></div></div>
+          <div class="tabs">
+            <div class="tab active"><div>Notifications</div><div class="underline"></div></div>
+            <div class="tab"><div>App log</div><div class="underline"></div></div>
+          </div>
+          <div class="content">
+            <div class="chips-row">
+              <div class="chip chip-filled">All</div>
+              <div class="chip chip-outline">Last hour</div>
+              <div class="chip chip-outline">Today</div>
+              <div class="chip chip-outline">Matched</div>
+            </div>
+            <div class="notif-entry">
+              <div class="top">
+                <div class="left">
+                  <div class="pkg-ic" style="background:var(--green);">F</div>
+                  <div class="pkg-name">com.example.app</div>
+                </div>
+                <div class="tm">09:41</div>
+              </div>
+              <div class="title">Echo • Sample notification</div>
+              <div class="body">Acknowledge required by 18:30</div>
+            </div>
+            <div class="notif-entry">
+              <div class="top">
+                <div class="left">
+                  <div class="pkg-ic" style="background:var(--green);">W</div>
+                  <div class="pkg-name">com.whatsapp</div>
+                </div>
+                <div class="tm">09:38</div>
+              </div>
+              <div class="title">Sam</div>
+              <div class="body">See you at 8?</div>
+            </div>
+            <div class="notif-entry">
+              <div class="top">
+                <div class="left">
+                  <div class="pkg-ic" style="background:var(--primary-c);">F</div>
+                  <div class="pkg-name">com.flowdroid</div>
+                </div>
+                <div class="tm">08:00</div>
+              </div>
+              <div class="title">Heartbeat</div>
+              <div class="body mono">flowdroid-heartbeat-1738329120</div>
+            </div>
+            <div class="notif-entry">
+              <div class="top">
+                <div class="left">
+                  <div class="pkg-ic" style="background:var(--red);">G</div>
+                  <div class="pkg-name">com.google.android.gm</div>
+                </div>
+                <div class="tm">07:55</div>
+              </div>
+              <div class="title">Inbox</div>
+              <div class="body">3 nuovi messaggi</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item sel"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 06 Setup ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">06</span> · Setup</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="app-bar"><div class="title">Setup</div><div></div></div>
+          <div class="content">
+            <div class="intro">
+              <div class="lbl">FIRST-RUN WIZARD</div>
+              <div class="desc">Grant the permissions FlowDroid needs to keep its listener alive on Samsung devices.</div>
+            </div>
+            <div class="step-card">
+              <div class="top">
+                <div class="sic" style="background:var(--green);">✓</div>
+                <div class="smid"><div class="stitle">Step 1 · Notification listener</div><div class="sdesc">Required. Lets FlowDroid see notifications.</div></div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="top">
+                <div class="sic" style="background:var(--amber);">!</div>
+                <div class="smid"><div class="stitle">Step 2 · Battery optimization</div><div class="sdesc">Whitelist FlowDroid so Samsung doesn't kill the service.</div></div>
+              </div>
+              <div class="actions">
+                <div class="btn-outline-sm">Why?</div>
+                <div class="btn-filled-sm">Open settings</div>
+              </div>
+            </div>
+            <div class="step-card">
+              <div class="top">
+                <div class="sic" style="background:var(--unknown);">?</div>
+                <div class="smid"><div class="stitle">Step 3 · Auto-start (Samsung)</div><div class="sdesc">Enable on Galaxy via Device Care → App power management.</div></div>
+              </div>
+              <div class="actions"><div class="btn-filled-sm">Open settings</div></div>
+            </div>
+            <div class="step-card">
+              <div class="top">
+                <div class="sic" style="background:var(--unknown);">○</div>
+                <div class="smid"><div class="stitle">Step 4 · Accessibility (optional)</div><div class="sdesc">Only needed for Tap-button actions inside other apps.</div></div>
+              </div>
+              <div class="actions"><div class="btn-outline-sm">Open settings</div></div>
+            </div>
+            <div class="step-card">
+              <div class="top">
+                <div class="sic" style="background:var(--green);">✓</div>
+                <div class="smid"><div class="stitle">Step 5 · Post notifications</div><div class="sdesc">Allows FlowDroid's foreground notification on Android 13+.</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item sel"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+  </section>
+
+  <h2>Section B — Flow Editor redesign ideas</h2>
+  <p class="lede">Rail canvas, family quick-picker, notification-sample assist, magic-text variables, logic blocks, and a dry-run drawer. Same FlowDroid token palette.</p>
+  <section class="grid">
+
+    <!-- ====================== 03a Rail canvas editor ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">03a</span> · Rail canvas editor</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="row1">
+              <div class="left">
+                <div class="icon-btn">←</div>
+                <div class="title">Echo notification <span class="pencil">✎</span></div>
+              </div>
+              <div class="right">
+                <div class="switch on"><div class="knob"></div></div>
+                <div class="btn-save"><span class="dirty-dot"></span>Save</div>
+              </div>
+            </div>
+            <div class="row2">
+              <div class="dot"></div>
+              <div class="label-on">Enabled</div>
+              <div class="sep">•</div><div>Ran 2m ago</div>
+              <div class="sep">•</div><div>3 matches today</div>
+              <div class="spacer"></div>
+              <div class="test-pill"><span class="glyph">▶</span> Test</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="section-lbl"><span class="label">WHEN</span><span class="action">Change trigger</span></div>
+            <div class="rail-step">
+              <div class="gutter">
+                <div class="line" style="background:transparent;"></div>
+                <div class="node" style="background:var(--f-notif);">🔔</div>
+                <div class="line"></div>
+              </div>
+              <div class="card-outer">
+                <div class="stripe" style="background:var(--f-notif);"></div>
+                <div class="step-inner">
+                  <div class="step-hdr"><div class="idx-pill" style="color:var(--f-notif);">T</div><div class="step-title">Notification posted</div><div class="chev">⌄</div></div>
+                  <div class="sub">From com.example.app</div>
+                  <div class="mono">title  ~  ^Echo.*</div>
+                </div>
+              </div>
+            </div>
+            <div class="section-lbl"><span class="label">THEN</span><span class="meta">2 actions</span></div>
+            <div class="rail-step">
+              <div class="gutter">
+                <div class="line"></div>
+                <div class="node" style="background:var(--f-ui);">☝</div>
+                <div class="line"></div>
+              </div>
+              <div class="card-outer">
+                <div class="stripe" style="background:var(--f-ui);"></div>
+                <div class="step-inner">
+                  <div class="step-hdr"><div class="idx-pill" style="color:var(--f-ui);">1</div><div class="step-title">Click action button</div><div class="chev">⌄</div></div>
+                  <div class="mono">label  ~  ^Acknowledge$</div>
+                </div>
+              </div>
+            </div>
+            <div class="rail-step">
+              <div class="gutter">
+                <div class="line"></div>
+                <div class="node" style="background:var(--f-notif);">🔔</div>
+                <div class="line" style="background:transparent;"></div>
+              </div>
+              <div class="card-outer">
+                <div class="stripe" style="background:var(--f-notif);"></div>
+                <div class="step-inner">
+                  <div class="step-hdr"><div class="idx-pill" style="color:var(--f-notif);">2</div><div class="step-title">Post notification</div><div class="chev">⌄</div></div>
+                  <div class="sub">title: "Echo notification acknowledged"</div>
+                </div>
+              </div>
+            </div>
+            <div class="add-row">
+              <div class="gutter"><div class="line"></div><div class="plus-node">+</div></div>
+              <div class="btn">+ Add action</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 03b Notification trigger assist ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">03b</span> · Notification trigger assist</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="row1">
+              <div class="left"><div class="icon-btn">←</div><div class="title">New flow <span class="pencil">✎</span></div></div>
+              <div class="right"><div class="switch off"><div class="knob"></div></div><div class="btn-save"><span class="dirty-dot"></span>Save</div></div>
+            </div>
+            <div class="row2">
+              <div class="dot off"></div><div class="label-off">Disabled</div>
+              <div class="sep">•</div><div>Ran never</div>
+              <div class="sep">•</div><div>0 matches today</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="section-lbl"><span class="label">WHEN</span></div>
+            <div class="card" style="display:flex; flex-direction:column; gap:10px;">
+              <div class="row" style="gap:8px;">
+                <div style="width:28px; height:28px; border-radius:14px; background:var(--f-notif); display:flex; align-items:center; justify-content:center;">🔔</div>
+                <div class="bold" style="font-size:14px;">Notification posted</div>
+              </div>
+              <div class="sample-pill">
+                <div class="lbl">Sample:</div>
+                <div class="nm">Echo · Sample notification</div>
+                <div class="pencil">✎</div>
+              </div>
+              <div class="tiny muted bold" style="letter-spacing:1px;">SUGGESTED REGEX</div>
+              <div class="regex-box">
+                <div class="reg">title  ~  ^Echo.*</div>
+                <div class="try">▶</div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet" style="height:520px;">
+          <div class="handle"></div>
+          <div class="sheet-hdr"><div class="ttl">Pick a sample notification</div><div class="close">✕</div></div>
+          <div class="sheet-sub">From the last 30 captured. FlowDroid derives a starting regex.</div>
+          <div class="search">🔎 <span>Search title, package…</span></div>
+          <div class="sample-row sel">
+            <div class="pkg-ic">F</div>
+            <div class="mid"><div class="t">Echo · Sample notification</div><div class="b">Acknowledge required by 18:30</div></div>
+            <div class="right"><div class="tm">09:41</div><div class="pk">com.example.app</div></div>
+          </div>
+          <div class="sample-row">
+            <div class="pkg-ic">W</div>
+            <div class="mid"><div class="t">Sam</div><div class="b">See you at 8?</div></div>
+            <div class="right"><div class="tm">09:38</div><div class="pk">com.whatsapp</div></div>
+          </div>
+          <div class="sample-row">
+            <div class="pkg-ic">F</div>
+            <div class="mid"><div class="t">Echo · Retry slot</div><div class="b">Spot reopened in main channel</div></div>
+            <div class="right"><div class="tm">08:12</div><div class="pk">com.example.app</div></div>
+          </div>
+          <div class="sample-row">
+            <div class="pkg-ic">F</div>
+            <div class="mid"><div class="t">Heartbeat</div><div class="b">flowdroid-heartbeat-1738</div></div>
+            <div class="right"><div class="tm">08:00</div><div class="pk">com.flowdroid</div></div>
+          </div>
+          <div class="sample-row">
+            <div class="pkg-ic">G</div>
+            <div class="mid"><div class="t">Inbox</div><div class="b">3 nuovi messaggi</div></div>
+            <div class="right"><div class="tm">07:55</div><div class="pk">com.google.android.gm</div></div>
+          </div>
+          <div style="padding:12px 16px 16px;"><div class="btn-primary">Use this sample</div></div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 03c Magic-text variable picker ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">03c</span> · Magic-text variable picker</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="row1">
+              <div class="left"><div class="icon-btn">←</div><div class="title">Notify webhook <span class="pencil">✎</span></div></div>
+              <div class="right"><div class="switch on"><div class="knob"></div></div><div class="btn-save"><span class="dirty-dot"></span>Save</div></div>
+            </div>
+            <div class="row2">
+              <div class="dot"></div><div class="label-on">Enabled</div>
+              <div class="sep">•</div><div>Ran 2m ago</div>
+              <div class="sep">•</div><div>3 matches today</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="section-lbl"><span class="label">ACTION · HTTP REQUEST</span></div>
+            <div class="rail-step" style="position:relative;">
+              <div class="gutter" style="display:none;"></div>
+              <div class="card-outer" style="width:100%;">
+                <div class="stripe" style="background:var(--f-net);"></div>
+                <div class="step-inner" style="gap:10px;">
+                  <div class="step-hdr">
+                    <div style="width:28px; height:28px; border-radius:14px; background:var(--f-net); display:flex; align-items:center; justify-content:center;">🌐</div>
+                    <div class="step-title">HTTP request</div>
+                  </div>
+                  <div class="row" style="gap:8px;">
+                    <div class="chip" style="background:color-mix(in srgb, var(--f-net) 20%, transparent); color:var(--f-net); font-weight:700; height:28px; border-radius:14px;">POST</div>
+                    <div class="field-input mono" style="flex:1;">https://hooks.acme.io/echo</div>
+                  </div>
+                  <div class="row" style="justify-content:space-between;">
+                    <div class="tiny muted bold" style="letter-spacing:1px;">BODY</div>
+                    <div class="chip chip-outline mono" style="font-size:10px;">application/json</div>
+                  </div>
+                  <div class="field-multiline">
+                    <div class="mono-line"><span class="punct">"Authorization": "Bearer </span><span class="var-chip vars">$token</span><span class="punct">",</span></div>
+                    <div class="mono-line"><span class="punct">"title": "</span><span class="var-chip notif">$notif.title</span><span class="punct">",</span></div>
+                    <div class="mono-line"><span class="punct">"body": "</span><span class="var-chip notif">$notif.text</span><span class="punct">"</span></div>
+                    <div class="insert-btn"><span class="glyph">{$}</span> Insert variable</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="gap:6px;"><span style="color:var(--f-vars);">✦</span><span class="tiny muted">Variables resolve at run-time from the trigger context.</span></div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+        <div class="scrim light"></div>
+        <div class="pointer-arrow" style="top:430px; right:60px;"></div>
+        <div class="var-popover" style="top:440px;">
+          <div class="pop-lbl">INSERT VARIABLE</div>
+          <div class="pop-search">🔎 <span>Search variables…</span></div>
+          <div class="grp">
+            <div class="gl">From notification trigger</div>
+            <div class="vrow"><span class="var-chip notif">$notif.title</span><span class="smp">Echo · Sample notification</span></div>
+            <div class="vrow"><span class="var-chip notif">$notif.text</span><span class="smp">Acknowledge required by 18:30</span></div>
+            <div class="vrow"><span class="var-chip notif">$notif.package</span><span class="smp">com.example.app</span></div>
+          </div>
+          <div class="grp">
+            <div class="gl">User-defined</div>
+            <div class="vrow"><span class="var-chip vars">$token</span><span class="smp">(set via SetVariable)</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 03d Logic blocks ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">03d</span> · Logic blocks expanded</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="row1">
+              <div class="left"><div class="icon-btn">←</div><div class="title">Smart filter <span class="pencil">✎</span></div></div>
+              <div class="right"><div class="switch on"><div class="knob"></div></div><div class="btn-save">Save</div></div>
+            </div>
+            <div class="row2">
+              <div class="dot"></div><div class="label-on">Enabled</div>
+              <div class="sep">•</div><div>Ran 5m ago</div>
+              <div class="sep">•</div><div>11 matches today</div>
+              <div class="spacer"></div>
+              <div class="test-pill"><span class="glyph">▶</span> Test</div>
+            </div>
+          </div>
+          <div class="content" style="gap:10px;">
+            <div class="section-lbl"><span class="label">WHEN</span></div>
+            <div class="rail-step">
+              <div class="gutter"><div class="line" style="background:transparent;"></div><div class="node" style="background:var(--f-notif);">🔔</div><div class="line" style="background:transparent;"></div></div>
+              <div class="card-outer"><div class="stripe" style="background:var(--f-notif);"></div>
+                <div class="step-inner"><div class="step-hdr"><div class="idx-pill" style="color:var(--f-notif);">T</div><div class="step-title">Notification posted</div></div><div class="sub">From com.example.app</div></div>
+              </div>
+            </div>
+            <div class="section-lbl"><span class="label">THEN</span></div>
+
+            <!-- IF block -->
+            <div class="logic-block">
+              <div class="l-hdr">
+                <div class="l-icon">⌥</div>
+                <div class="l-meta">
+                  <div class="l-title">If</div>
+                  <div class="l-cond">
+                    <span class="var-chip notif">$notif.title</span>
+                    <span>contains</span>
+                    <span class="lit">"Echo"</span>
+                  </div>
+                </div>
+                <div class="chev" style="color:var(--on-surface-v);">⌃</div>
+              </div>
+              <div class="branch">
+                <div class="b-label"><span class="sq" style="background:var(--f-logic);"></span><span style="color:var(--f-logic);">THEN</span></div>
+                <div class="nest-step">
+                  <div class="ind" style="background:color-mix(in srgb, var(--f-ui) 40%, transparent);"></div>
+                  <div class="nst-ic" style="background:var(--f-ui);">☝</div>
+                  <div class="nst-meta"><div class="t">Click action button</div><div class="m">label ~ ^Acknowledge$</div></div>
+                </div>
+                <div class="nest-step">
+                  <div class="ind" style="background:color-mix(in srgb, var(--f-notif) 40%, transparent);"></div>
+                  <div class="nst-ic" style="background:var(--f-notif);">🔔</div>
+                  <div class="nst-meta"><div class="t">Post notification</div></div>
+                </div>
+              </div>
+              <div class="branch else">
+                <div class="row" style="justify-content:space-between;">
+                  <div class="b-label" style="margin:0;"><span class="sq" style="background:var(--amber);"></span><span style="color:var(--amber);">ELSE</span></div>
+                  <div class="collapsed-line">⌄ collapsed</div>
+                </div>
+                <div class="nest-step" style="margin-top:6px;">
+                  <div class="ind" style="background:color-mix(in srgb, var(--f-vars) 40%, transparent);"></div>
+                  <div class="nst-ic" style="background:var(--f-vars);">𝑥</div>
+                  <div class="nst-meta"><div class="t">Set $skipped = true</div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LOOP block -->
+            <div class="logic-block amber">
+              <div class="l-hdr">
+                <div class="l-icon">↻</div>
+                <div class="l-meta">
+                  <div class="l-title">Loop · repeat 3 times</div>
+                  <div class="l-cond"><span>Iteration variable:</span> <span class="var-chip vars">$i</span></div>
+                </div>
+                <div class="counter" style="background:color-mix(in srgb, var(--f-time) 25%, transparent); color:var(--f-time);">×3</div>
+              </div>
+              <div class="branch">
+                <div class="nest-step">
+                  <div class="ind" style="background:color-mix(in srgb, var(--f-net) 40%, transparent);"></div>
+                  <div class="nst-ic" style="background:var(--f-net);">🌐</div>
+                  <div class="nst-meta"><div class="t">HTTP request</div><div class="m">POST  /retry</div></div>
+                </div>
+                <div class="nest-step">
+                  <div class="ind" style="background:color-mix(in srgb, var(--f-time) 40%, transparent);"></div>
+                  <div class="nst-ic" style="background:var(--f-time);">⏱</div>
+                  <div class="nst-meta"><div class="t">Delay 500 ms</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="add-row">
+              <div class="gutter"><div class="line"></div><div class="plus-node">+</div></div>
+              <div class="btn">+ Add action</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 03e Dry-run drawer ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">03e</span> · Dry-run drawer</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="row1">
+              <div class="left"><div class="icon-btn">←</div><div class="title">Echo notification <span class="pencil">✎</span></div></div>
+              <div class="right"><div class="switch on"><div class="knob"></div></div><div class="btn-save">Save</div></div>
+            </div>
+            <div class="row2">
+              <div class="dot"></div><div class="label-on">Enabled</div>
+              <div class="sep">•</div><div>Ran 2m ago</div>
+              <div class="sep">•</div><div>3 matches today</div>
+              <div class="spacer"></div>
+              <div class="test-pill"><span class="glyph">▶</span> Test</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="rail-step">
+              <div class="gutter"><div class="line" style="background:transparent;"></div><div class="node" style="background:var(--f-notif);">🔔</div><div class="line"></div></div>
+              <div class="card-outer"><div class="stripe" style="background:var(--f-notif);"></div><div class="step-inner"><div class="step-hdr"><div class="idx-pill" style="color:var(--f-notif);">T</div><div class="step-title">Notification posted</div></div><div class="sub">From com.example.app</div></div></div>
+            </div>
+            <div class="rail-step">
+              <div class="gutter"><div class="line"></div><div class="node" style="background:var(--f-ui);">☝</div><div class="line"></div></div>
+              <div class="card-outer"><div class="stripe" style="background:var(--f-ui);"></div><div class="step-inner"><div class="step-hdr"><div class="idx-pill" style="color:var(--f-ui);">1</div><div class="step-title">Click action button</div></div><div class="mono">label  ~  ^Acknowledge$</div></div></div>
+            </div>
+            <div class="rail-step">
+              <div class="gutter"><div class="line"></div><div class="node" style="background:var(--f-notif);">🔔</div><div class="line" style="background:transparent;"></div></div>
+              <div class="card-outer"><div class="stripe" style="background:var(--f-notif);"></div><div class="step-inner"><div class="step-hdr"><div class="idx-pill" style="color:var(--f-notif);">2</div><div class="step-title">Post notification</div></div></div></div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet" style="height:600px;">
+          <div class="handle"></div>
+          <div class="sheet-hdr">
+            <div class="row" style="gap:8px;">
+              <div class="ttl">Dry-run</div>
+              <div class="chip chip-stat" style="background:color-mix(in srgb, var(--green) 22%, transparent); color:var(--green); height:22px; border-radius:11px;">All steps passed</div>
+            </div>
+            <div class="close">✕</div>
+          </div>
+          <div style="padding:12px 16px 0;">
+            <div class="payload-row">
+              <div class="lbl">Sample:</div>
+              <div class="nm">Echo · Sample notification</div>
+              <div class="chg">Change</div>
+            </div>
+          </div>
+          <div style="padding:12px 16px 0; display:flex; flex-direction:column; gap:8px;">
+            <div class="run-row">
+              <div class="ric" style="background:var(--f-notif);">🔔</div>
+              <div class="rmeta"><div class="rt">0. Trigger matched</div><div class="rs">title ~ ^Echo.*  ✓</div></div>
+              <div class="rright"><div class="rbadge">✓ pass</div><div class="relap">0 ms</div></div>
+            </div>
+            <div class="run-row">
+              <div class="ric" style="background:var(--f-ui);">☝</div>
+              <div class="rmeta"><div class="rt">1. Click button</div><div class="rs">found → Acknowledge</div></div>
+              <div class="rright"><div class="rbadge">✓ pass</div><div class="relap">124 ms</div></div>
+            </div>
+            <div class="run-row">
+              <div class="ric" style="background:var(--f-notif);">🔔</div>
+              <div class="rmeta"><div class="rt">2. Post notification</div><div class="rs">title = "Echo notification acknowledged"</div></div>
+              <div class="rright"><div class="rbadge">✓ pass</div><div class="relap">38 ms</div></div>
+            </div>
+          </div>
+          <div style="padding:12px 16px 0;">
+            <div style="background:var(--surface-2); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:6px;">
+              <div class="tiny muted bold" style="letter-spacing:1.2px;">VARIABLES AFTER RUN</div>
+              <div class="var-row"><span class="var-chip notif">$notif.title</span><span class="eq">=</span><span class="val">"Echo · Sample notification"</span></div>
+              <div class="var-row"><span class="var-chip notif">$notif.text</span><span class="eq">=</span><span class="val">"Acknowledge required by 18:30"</span></div>
+              <div class="var-row"><span class="var-chip vars">$matched</span><span class="eq">=</span><span class="val">true</span></div>
+            </div>
+          </div>
+          <div style="padding:16px; display:flex; gap:12px;">
+            <div class="btn-outline" style="flex:1;">Run again</div>
+            <div class="btn-primary" style="flex:1;">Done</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- ====================== 03f Family quick-picker sheet ====================== -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="name">03f</span> · Action family quick-picker</div>
+      <article class="phone">
+        <div class="status-bar"><span>9:41</span><span class="right"><span>LTE</span><span>100%</span></span></div>
+        <div class="body">
+          <div class="hero">
+            <div class="row1">
+              <div class="left"><div class="icon-btn">←</div><div class="title">Echo notification <span class="pencil">✎</span></div></div>
+              <div class="right"><div class="switch on"><div class="knob"></div></div><div class="btn-save">Save</div></div>
+            </div>
+            <div class="row2">
+              <div class="dot"></div><div class="label-on">Enabled</div>
+              <div class="sep">•</div><div>Ran 2m ago</div>
+              <div class="sep">•</div><div>3 matches today</div>
+            </div>
+          </div>
+          <div class="content">
+            <div class="rail-step">
+              <div class="gutter"><div class="line" style="background:transparent;"></div><div class="node" style="background:var(--f-notif);">🔔</div><div class="line" style="background:transparent;"></div></div>
+              <div class="card-outer"><div class="stripe" style="background:var(--f-notif);"></div><div class="step-inner"><div class="step-hdr"><div class="idx-pill" style="color:var(--f-notif);">T</div><div class="step-title">Notification posted</div></div><div class="sub">From com.example.app</div></div></div>
+            </div>
+            <div class="add-row">
+              <div class="gutter"><div class="line"></div><div class="plus-node">+</div></div>
+              <div class="btn">+ Add action</div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item sel"><div class="pill">◇</div><div class="label">Flows</div></div>
+            <div class="nav-item"><div class="pill">♥</div><div class="label">Health</div></div>
+            <div class="nav-item"><div class="pill">☰</div><div class="label">Logs</div></div>
+            <div class="nav-item"><div class="pill">⚙</div><div class="label">Setup</div></div>
+          </div>
+        </div>
+        <div class="scrim"></div>
+        <div class="sheet" style="height:680px;">
+          <div class="handle"></div>
+          <div class="sheet-hdr"><div class="ttl">Add an action</div><div class="close">✕</div></div>
+          <div class="search">🔎 <span>Search 22 actions…</span></div>
+          <div style="padding:8px 16px 6px;"><div class="tiny muted bold" style="letter-spacing:1.2px;">FAMILIES</div></div>
+          <div class="fam-grid">
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-notif) 22%, transparent); color:var(--f-notif);">🔔</div>
+              <div class="ft">Notifications</div>
+              <div class="fh"><span>Click, post, dismiss</span><span>·</span><span class="ct" style="color:var(--f-notif);">3</span></div>
+            </div>
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-apps) 22%, transparent); color:var(--f-apps);">📱</div>
+              <div class="ft">Apps</div>
+              <div class="fh"><span>Launch, kill</span><span>·</span><span class="ct" style="color:var(--f-apps);">2</span></div>
+            </div>
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-ui) 22%, transparent); color:var(--f-ui);">☝</div>
+              <div class="ft">UI</div>
+              <div class="fh"><span>Tap, swipe, type</span><span>·</span><span class="ct" style="color:var(--f-ui);">4</span></div>
+            </div>
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-time) 22%, transparent); color:var(--f-time);">⏱</div>
+              <div class="ft">Timing</div>
+              <div class="fh"><span>Delay, wait</span><span>·</span><span class="ct" style="color:var(--f-time);">1</span></div>
+            </div>
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-net) 22%, transparent); color:var(--f-net);">🌐</div>
+              <div class="ft">Network</div>
+              <div class="fh"><span>HTTP request</span><span>·</span><span class="ct" style="color:var(--f-net);">1</span></div>
+            </div>
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-vars) 22%, transparent); color:var(--f-vars);">𝑥</div>
+              <div class="ft">Variables</div>
+              <div class="fh"><span>Set, read</span><span>·</span><span class="ct" style="color:var(--f-vars);">1</span></div>
+            </div>
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-files) 22%, transparent); color:var(--f-files);">🗎</div>
+              <div class="ft">Files &amp; data</div>
+              <div class="fh"><span>Read, write, hash</span><span>·</span><span class="ct" style="color:var(--f-files);">4</span></div>
+            </div>
+            <div class="fam-tile">
+              <div class="fic" style="background:color-mix(in srgb, var(--f-logic) 22%, transparent); color:var(--f-logic);">⌥</div>
+              <div class="ft">Logic</div>
+              <div class="fh"><span>If, Loop, Try</span><span>·</span><span class="ct" style="color:var(--f-logic);">3</span></div>
+            </div>
+          </div>
+          <div style="padding:14px 16px 6px;"><div class="tiny muted bold" style="letter-spacing:1.2px;">SUGGESTED FOR THIS FLOW</div></div>
+          <div class="sug-strip">
+            <div class="fam-pill" style="background:color-mix(in srgb, var(--f-ui) 18%, transparent); color:var(--f-ui);">☝ Click button</div>
+            <div class="fam-pill" style="background:color-mix(in srgb, var(--f-notif) 18%, transparent); color:var(--f-notif);">🔔 Post notif</div>
+            <div class="fam-pill" style="background:color-mix(in srgb, var(--f-net) 18%, transparent); color:var(--f-net);">🌐 HTTP</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+  </section>
+</main>
+</body>
+</html>

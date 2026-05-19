@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "01 · Hello world",
+    "enabled": false,
+    "notes": "Smallest possible flow: any notification triggers an echo notification. Tests NotificationPosted trigger + PostNotification action + basic magic text. After importing: set packageName on the trigger to whichever app you want to react to (e.g. com.example.app), otherwise it will fire on every notification (incl. its own — debounce caps it at ~1/sec).",
+    "triggers": [
+      {"type": "NotificationPosted"}
+    ],
+    "actions": [
+      {
+        "type": "PostNotification",
+        "title": "FlowDroid heard",
+        "text": "Title: {notification.title}\nFrom: {notification.package}",
+        "label": "Echo notification"
+      }
+    ]
+  }
+}

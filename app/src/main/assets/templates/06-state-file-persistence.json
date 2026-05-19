@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "06 · State file persistence (Read/Write file)",
+    "enabled": false,
+    "notes": "Fires daily at noon. Reads a previously-saved timestamp from app-private storage, overwrites it with the current trigger time, then notifies showing both old and new values. Tests ReadFile with continueOnError (first run: file missing, var stays empty), WriteFile OVERWRITE, and state persistence across executions. To test sooner: in the editor, change the TimeOfDay trigger to 2 minutes from now and run it twice in a row.",
+    "triggers": [
+      {
+        "type": "TimeOfDay",
+        "hour": 12,
+        "minute": 0
+      }
+    ],
+    "actions": [
+      {
+        "type": "ReadFile",
+        "path": "state/last_run.txt",
+        "intoVar": "previous",
+        "continueOnError": true,
+        "label": "Read last-run timestamp"
+      },
+      {
+        "type": "WriteFile",
+        "path": "state/last_run.txt",
+        "content": "{trigger.firedAtMillis}",
+        "mode": "OVERWRITE",
+        "label": "Persist current timestamp"
+      },
+      {
+        "type": "PostNotification",
+        "title": "State persisted",
+        "text": "Now:  {trigger.firedAtMillis}\nPrev: {var.previous}",
+        "label": "Report"
+      }
+    ]
+  }
+}

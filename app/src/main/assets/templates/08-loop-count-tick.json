@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "08 · Loop · count + Delay tick",
+    "enabled": false,
+    "notes": "On any notification (set a packageName filter for real use), runs a 3-iteration loop that delays 800ms then posts a tick notification. Tests Loop in COUNT mode, Delay action, nested action ordering, and the index variable inside a loop body. Trigger by sending yourself any notification, or use a webhook for deterministic testing.",
+    "triggers": [
+      {
+        "type": "NotificationPosted",
+        "debounceMillis": 20000
+      }
+    ],
+    "actions": [
+      {
+        "type": "Loop",
+        "mode": "COUNT",
+        "count": 3,
+        "actions": [
+          {
+            "type": "Delay",
+            "millis": 800,
+            "label": "Wait 800ms"
+          },
+          {
+            "type": "PostNotification",
+            "title": "Tick {var.index}",
+            "text": "of 3",
+            "label": "Tick"
+          }
+        ],
+        "label": "Three ticks"
+      }
+    ]
+  }
+}

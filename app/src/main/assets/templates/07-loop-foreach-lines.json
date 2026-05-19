@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "07 · Loop · foreach line of webhook body",
+    "enabled": false,
+    "notes": "Webhook → loop once per non-empty line of the body → post each line as a separate notification with its index. Tests Loop in FOREACH_LINES mode, item/index variable bindings, and webhook.body magic text. Trigger from a shell once enabled: curl -X POST http://127.0.0.1:8821/hook/loop --data-binary $'alpha\\nbeta\\ngamma'. Expect 3 notifications labeled 0/1/2.",
+    "triggers": [
+      {
+        "type": "Webhook",
+        "path": "loop"
+      }
+    ],
+    "actions": [
+      {
+        "type": "Loop",
+        "mode": "FOREACH_LINES",
+        "list": "{webhook.body}",
+        "itemVar": "item",
+        "indexVar": "index",
+        "actions": [
+          {
+            "type": "PostNotification",
+            "title": "Line #{var.index}",
+            "text": "{var.item}",
+            "label": "Per-line notification"
+          }
+        ],
+        "label": "Echo each line"
+      }
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+# Android Studio / Gradle
+build/
+.gradle/
+.idea/
+.kotlin/
+*.iml
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Signing
+*.jks
+*.keystore
+keystore.properties
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# Network captures (local-only, may contain personal data and bearer tokens)
+networkLog*.txt
+*.log
+
+# Claude Code session state
+.claude/
+
+# Internal status docs (stay on disk, not published)
+PLAN.md
+PHASE0_STATUS.md
+PHASE1_STATUS.md
+REVIEW_FINDINGS.md
+
+# Personal use-case files (stay on disk, not published)
+fubles_api_calls.md
+app/src/main/assets/templates/02-fubles-auto-join.json
+app/src/main/assets/templates/13-fubles-enroll-user-1024900.json
+app/src/main/assets/templates/15-fubles-enroll-via-match-list.json
+app/src/test/java/com/flowdroid/integration/FubblesFlowIntegrationTest.kt

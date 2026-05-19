@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "03 · Daily morning reminder (TimeOfDay)",
+    "enabled": false,
+    "notes": "Fires at 08:30 on weekdays (MON–FRI). Tests TimeOfDay trigger + daysOfWeek filter + the trigger.* magic-text bindings (hour, minute, dayOfWeek). Once enabled, you don't need to do anything else — wait for the next weekday morning to confirm it fires. Test now: edit the trigger to a time 2 minutes in the future and watch.",
+    "triggers": [
+      {
+        "type": "TimeOfDay",
+        "hour": 8,
+        "minute": 30,
+        "daysOfWeek": ["MON", "TUE", "WED", "THU", "FRI"]
+      }
+    ],
+    "actions": [
+      {
+        "type": "PostNotification",
+        "title": "Good morning!",
+        "text": "It's {trigger.hour}:{trigger.minute} on {trigger.dayOfWeek}. Time to start the day.",
+        "label": "Daily reminder"
+      }
+    ]
+  }
+}

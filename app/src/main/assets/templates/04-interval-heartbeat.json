@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "04 · Interval heartbeat (HTTP GET + active window)",
+    "enabled": false,
+    "notes": "Every 15 minutes during waking hours (08:00–22:00), pings httpbin.org and posts the resulting HTTP status. Tests Interval trigger (≥15min → WorkManager-backed), activeWindow, HTTP GET, storeStatusInVar, retries, and trigger.firedAtMillis magic-text. Tip: for testing, drop intervalMinutes to 1 in the editor — that switches the engine to AlarmManager.setRepeating which is throttle-prone on some OEMs but fine for a quick demo.",
+    "triggers": [
+      {
+        "type": "Interval",
+        "intervalMinutes": 15,
+        "activeWindow": {
+          "startHour": 8,
+          "startMinute": 0,
+          "endHour": 22,
+          "endMinute": 0
+        }
+      }
+    ],
+    "actions": [
+      {
+        "type": "Http",
+        "method": "GET",
+        "url": "https://httpbin.org/get",
+        "timeoutMs": 10000,
+        "retries": 2,
+        "retryBackoffMs": 500,
+        "storeStatusInVar": "status",
+        "storeBodyInVar": "body",
+        "label": "Heartbeat ping"
+      },
+      {
+        "type": "PostNotification",
+        "title": "Heartbeat",
+        "text": "HTTP {var.status} at {trigger.firedAtMillis}",
+        "label": "Status report"
+      }
+    ]
+  }
+}

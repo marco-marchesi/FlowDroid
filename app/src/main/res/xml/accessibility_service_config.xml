@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  FlowDroid AccessibilityService configuration.
+
+  We request the minimum capabilities needed for UI automation:
+    - canPerformGestures: dispatch synthetic tap/swipe gestures (the centrepiece of UiClick / UiSwipe).
+    - canRetrieveWindowContent: read the AccessibilityNodeInfo tree so BY_TEXT / BY_CONTENT_DESCRIPTION /
+      BY_VIEW_ID targets work.
+    - flagDefault + flagRequestTouchExplorationMode is intentionally NOT set — we don't intercept user touches.
+    - flagRetrieveInteractiveWindows = true so we can see system-level windows (the keyguard etc.).
+    - typeAllMask: we listen to broad event types so we can use them as latency-sensitive triggers in
+      future phases (T-APP-001 etc.). For Phase 2 the listener is mostly idle.
+
+  Packages: empty = all apps. We need this to drive automation across whatever app the user picks.
+
+  Note: Play Store may reject if the description doesn't clearly justify accessibility use. Until we
+  ship to Play Store the description below is internal; before Play Store submission expand it.
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeAllMask"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault|flagRetrieveInteractiveWindows|flagReportViewIds"
+    android:canPerformGestures="true"
+    android:canRetrieveWindowContent="true"
+    android:description="@string/accessibility_service_description"
+    android:notificationTimeout="100"
+    android:summary="@string/accessibility_service_summary" />

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FlowDroid</string>
+    <string name="notification_listener_label">FlowDroid notification listener</string>
+
+    <!-- Foreground service notification -->
+    <string name="fgs_channel_name">FlowDroid service</string>
+    <string name="fgs_channel_description">Keeps FlowDroid running in the background. Required for automation reliability.</string>
+    <string name="fgs_notification_title">FlowDroid is running</string>
+    <string name="fgs_notification_text_ok">Listening for events · all systems green</string>
+    <string name="fgs_notification_text_degraded">Listening for events · some systems degraded</string>
+    <string name="fgs_notification_text_critical">Listener access lost — tap to fix</string>
+    <string name="fgs_action_health">Health</string>
+    <string name="fgs_action_self_test">Self-test</string>
+
+    <!-- User-facing flow events channel -->
+    <string name="flows_channel_name">Flow notifications</string>
+    <string name="flows_channel_description">Notifications posted by your flows.</string>
+
+    <!-- Alerts about service health (critical) -->
+    <string name="alerts_channel_name">FlowDroid alerts</string>
+    <string name="alerts_channel_description">Alerts when FlowDroid loses access to a required permission.</string>
+
+    <!-- Accessibility service -->
+    <string name="accessibility_service_summary">FlowDroid UI automation</string>
+    <string name="accessibility_service_description">Required to dispatch taps, swipes, and text input as part of your flows (e.g. clicking buttons inside other apps). FlowDroid does not observe or store any content; it only acts on the elements your flows explicitly target. Disable at any time in Settings → Accessibility.</string>
+</resources>

@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "05 · Webhook echo",
+    "enabled": false,
+    "notes": "Listens on the local HTTP server at path /hook/echo and posts a notification echoing the method + body. Tests the Webhook trigger and webhook.* magic-text bindings. Once enabled, trigger from another shell: curl -X POST http://127.0.0.1:8821/hook/echo --data 'hello'. For remote testing, set up adb reverse tcp:8821 tcp:8821 then call from your desktop.",
+    "triggers": [
+      {
+        "type": "Webhook",
+        "path": "echo",
+        "method": "ANY"
+      }
+    ],
+    "actions": [
+      {
+        "type": "PostNotification",
+        "title": "Webhook /{webhook.path}",
+        "text": "{webhook.method} body:\n{webhook.body}",
+        "label": "Echo webhook"
+      }
+    ]
+  }
+}

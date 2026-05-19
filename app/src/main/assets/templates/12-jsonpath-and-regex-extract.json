@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "12 · Magic-text · jsonpath + regex extraction",
+    "enabled": false,
+    "notes": "Webhook → uses |jsonpath:$.id and |regex:\\d+ magic-text modifiers to pull structured pieces out of the request body → stores them in vars → posts a notification showing the parsed pieces. Tests the magic-text modifier system end-to-end. Trigger: curl -X POST -H 'Content-Type: application/json' http://127.0.0.1:8821/hook/extract --data '{\"id\":42,\"name\":\"hello\",\"count\":17}'. Expect: id=42, firstNum=42, name=hello.",
+    "triggers": [
+      {
+        "type": "Webhook",
+        "path": "extract"
+      }
+    ],
+    "actions": [
+      {
+        "type": "SetVariable",
+        "name": "parsedId",
+        "value": "{webhook.body|jsonpath:$.id}",
+        "label": "Extract .id from JSON"
+      },
+      {
+        "type": "SetVariable",
+        "name": "parsedName",
+        "value": "{webhook.body|jsonpath:$.name}",
+        "label": "Extract .name from JSON"
+      },
+      {
+        "type": "SetVariable",
+        "name": "firstNum",
+        "value": "{webhook.body|regex:\\d+}",
+        "label": "First digit run via regex"
+      },
+      {
+        "type": "PostNotification",
+        "title": "Parsed payload",
+        "text": "id={var.parsedId}\nname={var.parsedName}\nfirstNum={var.firstNum}",
+        "label": "Report extracted values"
+      }
+    ]
+  }
+}

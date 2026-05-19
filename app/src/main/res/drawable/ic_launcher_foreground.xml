@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive-icon foreground: the "flow rail" — a vertical line connecting three coloured nodes
+  matching the editor's family palette. Reads as "trigger → UI step → network call" — the
+  canonical FlowDroid pipeline. All geometry sits well inside the 66dp safe zone (24..84 horiz,
+  20..88 vert) so it survives every launcher mask (circle / squircle / teardrop).
+
+  Colours:
+    top    = #4CAF7B  (Notifications family, the trigger)
+    middle = #B580E0  (UI family, the visible action)
+    bottom = #4FC8E0  (Network family, the API call)
+  Rail line is the muted primary so it doesn't fight the nodes.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Connecting rail. Two short segments so the line tucks under the nodes instead of
+         poking out the sides; thicker than a hairline for visibility on the launcher grid. -->
+    <path
+        android:strokeColor="#B9C7DC"
+        android:strokeAlpha="0.55"
+        android:strokeWidth="4"
+        android:pathData="M54,40 L54,68" />
+
+    <!-- Top node — Notification (green). Drawn as a circle via the standard SVG arc trick:
+         move to centre+(-r,0), 2× half-arcs back round to the start. -->
+    <path
+        android:fillColor="#4CAF7B"
+        android:pathData="M54,32 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0" />
+    <!-- Inner bell-glyph hint on the top node — a small white dot suggests "notification". -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.85"
+        android:pathData="M54,32 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0" />
+
+    <!-- Middle node — UI (purple). Slightly smaller than the trigger for visual hierarchy. -->
+    <path
+        android:fillColor="#B580E0"
+        android:pathData="M54,54 m-11,0 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0" />
+
+    <!-- Bottom node — Network (cyan). Same radius as the top to bracket the rail. -->
+    <path
+        android:fillColor="#4FC8E0"
+        android:pathData="M54,76 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0" />
+    <!-- Outgoing arrow head from the bottom node — points down/out, hinting at the API send. -->
+    <path
+        android:fillColor="#11141A"
+        android:fillAlpha="0.75"
+        android:pathData="M54,73 L60,80 L48,80 Z" />
+</vector>

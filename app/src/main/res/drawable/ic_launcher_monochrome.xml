@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Themed-icon (Android 13+) monochrome silhouette. The OS tints whatever's white here with the
+  user's wallpaper-derived palette, so we must NOT use multiple colours — only opaque white for
+  visible bits and full transparency (no path) for negative space.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Rail (a single straight line, slightly thinner so the nodes dominate). -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M54,40 L54,68" />
+
+    <!-- Three nodes, same geometry as the colour foreground. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,32 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,54 m-11,0 a11,11 0 1,0 22,0 a11,11 0 1,0 -22,0" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,76 m-14,0 a14,14 0 1,0 28,0 a14,14 0 1,0 -28,0" />
+</vector>

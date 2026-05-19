@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "09 · TryCatch · flaky HTTP with fallback + log",
+    "enabled": false,
+    "notes": "Webhook → tries an HTTP call to httpbin.org/status/503 (which always fails) → catch posts a fallback notification with the error reason → finally appends a line to a log file. Tests TryCatch full pipeline: try-fails branch, intoErrorVar var capture, fallback notification, finally always runs, WriteFile in APPEND mode. Trigger: curl -X POST http://127.0.0.1:8821/hook/flaky --data 'test'. Inspect the log later via 'adb shell run-as com.flowdroid cat files/automation/logs/flaky.log'.",
+    "triggers": [
+      {
+        "type": "Webhook",
+        "path": "flaky"
+      }
+    ],
+    "actions": [
+      {
+        "type": "TryCatch",
+        "intoErrorVar": "err",
+        "tryActions": [
+          {
+            "type": "Http",
+            "method": "GET",
+            "url": "https://httpbin.org/status/503",
+            "timeoutMs": 5000,
+            "retries": 0,
+            "storeStatusInVar": "status",
+            "label": "Always 503"
+          },
+          {
+            "type": "PostNotification",
+            "title": "Won't see this",
+            "text": "Try path succeeded — but the 503 above failed it.",
+            "label": "Unreachable"
+          }
+        ],
+        "catchActions": [
+          {
+            "type": "PostNotification",
+            "title": "🛟 Fallback ran",
+            "text": "Reason: {var.err}\nLast HTTP status: {var.status}",
+            "label": "Catch fallback"
+          }
+        ],
+        "finallyActions": [
+          {
+            "type": "WriteFile",
+            "path": "logs/flaky.log",
+            "content": "ran at {webhook.method} /{webhook.path} → err={var.err} status={var.status}\n",
+            "mode": "APPEND",
+            "label": "Append run to log"
+          }
+        ],
+        "label": "Resilient HTTP block"
+      }
+    ]
+  }
+}

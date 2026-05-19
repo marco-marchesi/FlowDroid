@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "11 · If · regex-match alert on notification title",
+    "enabled": false,
+    "notes": "On any notification, regex-matches the title against (?i)error|fail|critical. If matched, posts a loud alert; otherwise silently appends to a benign-traffic log file. Tests If with REGEX condition + case-insensitive matching, branching that does WORK on the else path (not just a no-op), and WriteFile APPEND. Trigger by sending yourself a notification with a title containing 'error' (e.g. from a chat app), then one without — verify only the first one alerts.",
+    "triggers": [
+      {
+        "type": "NotificationPosted",
+        "debounceMillis": 1000
+      }
+    ],
+    "actions": [
+      {
+        "type": "If",
+        "condition": {
+          "left": "{notification.title}",
+          "op": "REGEX",
+          "right": "(?i)error|fail|critical"
+        },
+        "thenActions": [
+          {
+            "type": "PostNotification",
+            "title": "🚨 Alert from {notification.package}",
+            "text": "{notification.title}",
+            "label": "Loud alert"
+          }
+        ],
+        "elseActions": [
+          {
+            "type": "WriteFile",
+            "path": "logs/benign_notifs.log",
+            "content": "{notification.package} | {notification.title}\n",
+            "mode": "APPEND",
+            "label": "Log benign"
+          }
+        ],
+        "label": "Severity router"
+      }
+    ]
+  }
+}

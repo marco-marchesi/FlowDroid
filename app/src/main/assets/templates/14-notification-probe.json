@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "14 · Notification probe (debug)",
+    "enabled": false,
+    "notes": "Diagnostic flow: on every notification from a target package, writes a tab-separated row capturing notification.title / .text / .bigText / .subText / .actionLabel.0..2 / .channel / .package / .postTime to app-private storage at 'logs/notif_probe.log'. Then posts a heads-up notification showing the bigText so you can read it in your tray. Use this to figure out what fields a real notification actually carries so you can build robust magic-text patterns. After importing: edit the trigger and set packageName to whichever app you want to investigate (e.g. com.example.app). Read the log file via 'adb shell run-as com.flowdroid.debug cat files/automation/logs/notif_probe.log' or build a temporary flow that ReadFile→PostNotification.",
+    "triggers": [
+      {
+        "type": "NotificationPosted",
+        "packageName": "com.example.app"
+      }
+    ],
+    "actions": [
+      {
+        "type": "WriteFile",
+        "path": "logs/notif_probe.log",
+        "content": "{notification.postTime}\ttitle={notification.title}\ttext={notification.text}\tbigText={notification.bigText}\tsubText={notification.subText}\tchannel={notification.channel}\tpackage={notification.package}\taction0={notification.action[0].label}\taction1={notification.action[1].label}\taction2={notification.action[2].label}\trawExtras={notification.rawExtras}\n",
+        "mode": "APPEND",
+        "label": "Dump notif fields + rawExtras"
+      },
+      {
+        "type": "PostNotification",
+        "title": "Probe captured",
+        "text": "title: {notification.title}\nbigText: {notification.bigText}\nextras: {notification.rawExtras}",
+        "label": "Echo so you can read it"
+      }
+    ]
+  }
+}

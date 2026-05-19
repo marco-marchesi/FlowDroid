@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "flow": {
+    "name": "10 · Base64 encode + SHA-256 hash pipeline",
+    "enabled": false,
+    "notes": "Webhook → Base64-encode the body → SHA-256 hash the body → SHA-256 hash the Base64 (to prove chained var reads work) → post all three values. Tests Base64 ENCODE, Hash with SHA-256, and var-chaining magic text. Trigger: curl -X POST http://127.0.0.1:8821/hook/crypto --data 'hello world'. Cross-check on desktop: printf 'hello world' | base64  and  printf 'hello world' | sha256sum.",
+    "triggers": [
+      {
+        "type": "Webhook",
+        "path": "crypto"
+      }
+    ],
+    "actions": [
+      {
+        "type": "Base64",
+        "input": "{webhook.body}",
+        "mode": "ENCODE",
+        "intoVar": "b64",
+        "label": "Encode body"
+      },
+      {
+        "type": "Hash",
+        "input": "{webhook.body}",
+        "algorithm": "SHA256",
+        "intoVar": "sha_raw",
+        "label": "SHA-256 of body"
+      },
+      {
+        "type": "Hash",
+        "input": "{var.b64}",
+        "algorithm": "SHA256",
+        "intoVar": "sha_b64",
+        "label": "SHA-256 of base64"
+      },
+      {
+        "type": "PostNotification",
+        "title": "Crypto pipeline",
+        "text": "b64:        {var.b64}\nsha(body):  {var.sha_raw}\nsha(b64):   {var.sha_b64}",
+        "label": "Report digests"
+      }
+    ]
+  }
+}
