@@ -108,6 +108,20 @@ sealed interface TriggerEvent {
         val query: Map<String, String>,
         val body: String,
     ) : TriggerEvent
+
+    /**
+     * An MQTT message arrived on a subscribed topic.
+     *
+     * Magic-text bindings:
+     *  - `{mqtt.topic}` — the topic the message was published to (may include concrete wildcarded segments)
+     *  - `{mqtt.payload}` — message payload decoded as UTF-8
+     *  - `{mqtt.qos}` — QoS level (0, 1, or 2) as a string
+     */
+    data class MqttMessage(
+        val topic: String,
+        val payload: String,
+        val qos: Int,
+    ) : TriggerEvent
 }
 
 /** Typed reasons an action execution can fail. */

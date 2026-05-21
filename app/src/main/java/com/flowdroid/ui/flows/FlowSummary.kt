@@ -27,6 +27,7 @@ fun summarizeTrigger(trigger: Trigger): String = when (trigger) {
     is Trigger.TimeOfDay -> summarizeTimeOfDayTrigger(trigger)
     is Trigger.Interval -> summarizeIntervalTrigger(trigger)
     is Trigger.Webhook -> summarizeWebhookTrigger(trigger)
+    is Trigger.MqttSubscribe -> "MQTT ${trigger.topic} @ ${trigger.brokerUrl}"
     else -> "Custom trigger (${trigger::class.simpleName ?: "?"})"
 }
 
@@ -150,6 +151,33 @@ fun summarizeAction(action: Action): String = when (action) {
     }
     is Action.UnlockScreen ->
         "Unlock screen (timeout ${action.timeoutMs}ms)"
+    is Action.LockScreen -> "Lock screen"
+    is Action.Toast -> "Toast \"${action.text.take(40)}${if (action.text.length > 40) "…" else ""}\""
+    is Action.OpenUrl -> "Open ${action.url.take(50)}${if (action.url.length > 50) "…" else ""}"
+    is Action.CopyToClipboard -> "Copy to clipboard: \"${action.text.take(30)}…\""
+    is Action.GetClipboard -> "Read clipboard → {var.${action.intoVar}}"
+    is Action.Vibrate -> "Vibrate ${action.durationMs}ms"
+    is Action.Tts -> "Speak \"${action.text.take(40)}${if (action.text.length > 40) "…" else ""}\""
+    is Action.Math -> {
+        val sym = when (action.op) {
+            com.flowdroid.common.flow.MathOp.ADD -> "+"
+            com.flowdroid.common.flow.MathOp.SUBTRACT -> "−"
+            com.flowdroid.common.flow.MathOp.MULTIPLY -> "×"
+            com.flowdroid.common.flow.MathOp.DIVIDE -> "÷"
+            com.flowdroid.common.flow.MathOp.MODULO -> "%"
+            com.flowdroid.common.flow.MathOp.POWER -> "^"
+        }
+        "Math: ${action.left} $sym ${action.right} → {var.${action.intoVar}}"
+    }
+    is Action.StringTransform ->
+        "String ${action.op.name.lowercase()} → {var.${action.intoVar}}"
+    is Action.DateFormat ->
+        "Date ${action.pattern} → {var.${action.intoVar}}"
+    is Action.SendSms -> "SMS to ${action.phoneNumber.take(20)}"
+    is Action.SendWhatsApp -> "WhatsApp to ${action.phoneNumber.take(20)}"
+    is Action.SendTelegram -> "Telegram to ${action.recipient.take(20)}"
+    is Action.SendEmail -> "Email to ${action.to.take(30)}"
+    is Action.MqttPublish -> "MQTT publish ${action.topic.take(30)}"
     else -> "Custom action (${action::class.simpleName ?: "?"})"
 }
 

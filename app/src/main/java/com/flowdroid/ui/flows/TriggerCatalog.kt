@@ -75,6 +75,14 @@ object TriggerCatalog {
                 )
             },
         ),
+        TriggerEntry(
+            id = "mqtt_subscribe",
+            name = "MQTT subscribe",
+            description = "Fire when a message arrives on a subscribed MQTT topic. Supports + and # wildcards.",
+            family = TriggerFamily.EXTERNAL,
+            keywords = listOf("mqtt", "iot", "broker", "subscribe", "topic", "message", "mosquitto", "hivemq"),
+            factory = { Trigger.MqttSubscribe(brokerUrl = "tcp://", topic = "#") },
+        ),
     )
 
     /**

@@ -7,9 +7,12 @@ import com.flowdroid.common.flow.Action
 import com.flowdroid.common.flow.Flow
 import com.flowdroid.common.flow.FlowRepository
 import com.flowdroid.common.flow.Trigger
+import com.flowdroid.data.settings.ConnectionSettingsRepository
+import com.flowdroid.data.settings.MqttProfile
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
@@ -28,11 +31,22 @@ class FlowEditorViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
     private lateinit var repo: FlowRepository
+    private lateinit var flowRunRepo: com.flowdroid.common.repo.FlowRunRepository
+    private lateinit var connectionSettings: ConnectionSettingsRepository
     private val clock = FakeClock(wallMillis = 1_700_000_000_000L)
 
     @BeforeEach fun setup() {
         Dispatchers.setMain(dispatcher)
         repo = mockk(relaxed = false)
+        // FlowEditorViewModel observes the per-flow run history for its status strip — return
+        // an empty cold flow so the VM resolves but doesn't surface a label.
+        flowRunRepo = mockk {
+            io.mockk.every { observeRecentForFlow(any(), any()) } returns
+                kotlinx.coroutines.flow.flowOf(emptyList())
+        }
+        connectionSettings = mockk {
+            every { mqttProfile } returns kotlinx.coroutines.flow.flowOf(MqttProfile())
+        }
     }
 
     @AfterEach fun tearDown() { Dispatchers.resetMain() }
@@ -41,7 +55,7 @@ class FlowEditorViewModelTest {
         val handle = SavedStateHandle(
             if (flowId == null) emptyMap() else mapOf("flowId" to flowId),
         )
-        return FlowEditorViewModel(repo, clock, handle)
+        return FlowEditorViewModel(repo, flowRunRepo, clock, handle, connectionSettings)
     }
 
     @Test fun `new flow init has a sensible default draft`() = runTest(dispatcher) {

@@ -9,6 +9,9 @@ import com.flowdroid.common.flow.DayOfWeek
 import com.flowdroid.common.flow.FileWriteMode
 import com.flowdroid.common.flow.HashAlgorithm
 import com.flowdroid.common.flow.LoopMode
+import com.flowdroid.common.flow.MathOp
+import com.flowdroid.common.flow.StringOp
+import com.flowdroid.common.flow.TtsQueueMode
 import com.flowdroid.common.flow.HttpBodyType
 import com.flowdroid.common.flow.HttpHeader
 import com.flowdroid.common.flow.HttpMethod
@@ -84,6 +87,22 @@ internal object FlowSerialization {
     const val TYPE_LOOP: String = "Loop"
     const val TYPE_TRY_CATCH: String = "TryCatch"
     const val TYPE_UNLOCK_SCREEN: String = "UnlockScreen"
+    const val TYPE_TOAST: String = "Toast"
+    const val TYPE_OPEN_URL: String = "OpenUrl"
+    const val TYPE_COPY_TO_CLIPBOARD: String = "CopyToClipboard"
+    const val TYPE_GET_CLIPBOARD: String = "GetClipboard"
+    const val TYPE_VIBRATE: String = "Vibrate"
+    const val TYPE_TTS: String = "Tts"
+    const val TYPE_MATH: String = "Math"
+    const val TYPE_STRING_TRANSFORM: String = "StringTransform"
+    const val TYPE_DATE_FORMAT: String = "DateFormat"
+    const val TYPE_LOCK_SCREEN: String = "LockScreen"
+    const val TYPE_SEND_SMS: String = "SendSms"
+    const val TYPE_SEND_WHATSAPP: String = "SendWhatsApp"
+    const val TYPE_SEND_TELEGRAM: String = "SendTelegram"
+    const val TYPE_SEND_EMAIL: String = "SendEmail"
+    const val TYPE_MQTT_PUBLISH: String = "MqttPublish"
+    const val TYPE_MQTT_SUBSCRIBE: String = "MqttSubscribe"
 
     /**
      * The shared [Json] instance for trigger / action serialisation. Configured for:
@@ -151,6 +170,19 @@ internal sealed class TriggerSurrogate {
         val secret: String? = null,
         val label: String? = null,
     ) : TriggerSurrogate()
+
+    @Serializable
+    @SerialName(FlowSerialization.TYPE_MQTT_SUBSCRIBE)
+    data class MqttSubscribe(
+        val brokerUrl: String,
+        val topic: String,
+        val qos: Int = 0,
+        val username: String = "",
+        val password: String = "",
+        val clientId: String = "",
+        val payloadRegex: String = "",
+        val label: String? = null,
+    ) : TriggerSurrogate()
 }
 
 /** Mirror of [TimeRange] for serialisation. Same shape; lives top-level to satisfy KSP. */
@@ -191,6 +223,16 @@ internal fun Trigger.toSurrogate(): TriggerSurrogate = when (this) {
         secret = secret,
         label = label,
     )
+    is Trigger.MqttSubscribe -> TriggerSurrogate.MqttSubscribe(
+        brokerUrl = brokerUrl,
+        topic = topic,
+        qos = qos,
+        username = username,
+        password = password,
+        clientId = clientId,
+        payloadRegex = payloadRegex,
+        label = label,
+    )
     // Action and Trigger are intentionally not sealed (test code creates ad-hoc subtypes).
     // Production should never hit this branch; if it does, we fail loud rather than silently
     // dropping the flow.
@@ -224,6 +266,16 @@ internal fun TriggerSurrogate.toDomain(): Trigger = when (this) {
         path = path,
         method = method,
         secret = secret,
+        label = label,
+    )
+    is TriggerSurrogate.MqttSubscribe -> Trigger.MqttSubscribe(
+        brokerUrl = brokerUrl,
+        topic = topic,
+        qos = qos,
+        username = username,
+        password = password,
+        clientId = clientId,
+        payloadRegex = payloadRegex,
         label = label,
     )
 }
@@ -446,6 +498,140 @@ internal sealed class ActionSurrogate {
         val continueOnError: Boolean = false,
         val label: String? = null,
     ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_TOAST)
+    data class Toast(
+        val text: String,
+        val longDuration: Boolean = false,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_OPEN_URL)
+    data class OpenUrl(
+        val url: String,
+        val targetPackage: String? = null,
+        val continueOnError: Boolean = false,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_COPY_TO_CLIPBOARD)
+    data class CopyToClipboard(
+        val text: String,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_GET_CLIPBOARD)
+    data class GetClipboard(
+        val intoVar: String,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_VIBRATE)
+    data class Vibrate(
+        val durationMs: Long = 250L,
+        val amplitude: Int = -1,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_TTS)
+    data class Tts(
+        val text: String,
+        val localeTag: String? = null,
+        val queue: TtsQueueMode = TtsQueueMode.ADD,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_MATH)
+    data class Math(
+        val left: String,
+        val op: MathOp,
+        val right: String,
+        val intoVar: String,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_STRING_TRANSFORM)
+    data class StringTransform(
+        val input: String,
+        val op: StringOp,
+        val arg1: String = "",
+        val arg2: String = "",
+        val intoVar: String,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_DATE_FORMAT)
+    data class DateFormat(
+        val timestamp: String = "",
+        val pattern: String = "yyyy-MM-dd HH:mm:ss",
+        val intoVar: String,
+        val continueOnError: Boolean = true,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_LOCK_SCREEN)
+    data class LockScreen(
+        val continueOnError: Boolean = false,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_SEND_SMS)
+    data class SendSms(
+        val phoneNumber: String,
+        val body: String,
+        val continueOnError: Boolean = false,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_SEND_WHATSAPP)
+    data class SendWhatsApp(
+        val phoneNumber: String,
+        val body: String,
+        val continueOnError: Boolean = false,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_SEND_TELEGRAM)
+    data class SendTelegram(
+        val recipient: String,
+        val body: String,
+        val continueOnError: Boolean = false,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_SEND_EMAIL)
+    data class SendEmail(
+        val to: String,
+        val subject: String = "",
+        val body: String = "",
+        val cc: String = "",
+        val bcc: String = "",
+        val continueOnError: Boolean = false,
+        val label: String? = null,
+    ) : ActionSurrogate()
+
+    @Serializable @SerialName(FlowSerialization.TYPE_MQTT_PUBLISH)
+    data class MqttPublish(
+        val brokerUrl: String,
+        val topic: String,
+        val payload: String = "",
+        val qos: Int = 0,
+        val retained: Boolean = false,
+        val username: String = "",
+        val password: String = "",
+        val clientId: String = "",
+        val timeoutMs: Long = 10_000L,
+        val storeResponseInVar: String = "",
+        val continueOnError: Boolean = false,
+        val label: String? = null,
+    ) : ActionSurrogate()
 }
 
 /**
@@ -619,6 +805,21 @@ internal fun Action.toSurrogate(): ActionSurrogate = when (this) {
         continueOnError = continueOnError,
         label = label,
     )
+    is Action.Toast -> ActionSurrogate.Toast(text = text, longDuration = longDuration, continueOnError = continueOnError, label = label)
+    is Action.OpenUrl -> ActionSurrogate.OpenUrl(url = url, targetPackage = targetPackage, continueOnError = continueOnError, label = label)
+    is Action.CopyToClipboard -> ActionSurrogate.CopyToClipboard(text = text, continueOnError = continueOnError, label = label)
+    is Action.GetClipboard -> ActionSurrogate.GetClipboard(intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is Action.Vibrate -> ActionSurrogate.Vibrate(durationMs = durationMs, amplitude = amplitude, continueOnError = continueOnError, label = label)
+    is Action.Tts -> ActionSurrogate.Tts(text = text, localeTag = localeTag, queue = queue, continueOnError = continueOnError, label = label)
+    is Action.Math -> ActionSurrogate.Math(left = left, op = op, right = right, intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is Action.StringTransform -> ActionSurrogate.StringTransform(input = input, op = op, arg1 = arg1, arg2 = arg2, intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is Action.DateFormat -> ActionSurrogate.DateFormat(timestamp = timestamp, pattern = pattern, intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is Action.LockScreen -> ActionSurrogate.LockScreen(continueOnError = continueOnError, label = label)
+    is Action.SendSms -> ActionSurrogate.SendSms(phoneNumber = phoneNumber, body = body, continueOnError = continueOnError, label = label)
+    is Action.SendWhatsApp -> ActionSurrogate.SendWhatsApp(phoneNumber = phoneNumber, body = body, continueOnError = continueOnError, label = label)
+    is Action.SendTelegram -> ActionSurrogate.SendTelegram(recipient = recipient, body = body, continueOnError = continueOnError, label = label)
+    is Action.SendEmail -> ActionSurrogate.SendEmail(to = to, subject = subject, body = body, cc = cc, bcc = bcc, continueOnError = continueOnError, label = label)
+    is Action.MqttPublish -> ActionSurrogate.MqttPublish(brokerUrl = brokerUrl, topic = topic, payload = payload, qos = qos, retained = retained, username = username, password = password, clientId = clientId, timeoutMs = timeoutMs, storeResponseInVar = storeResponseInVar, continueOnError = continueOnError, label = label)
     else -> throw IllegalArgumentException("Unknown Action subtype: ${this::class.qualifiedName}")
 }
 
@@ -772,6 +973,21 @@ internal fun ActionSurrogate.toDomain(): Action = when (this) {
         continueOnError = continueOnError,
         label = label,
     )
+    is ActionSurrogate.Toast -> Action.Toast(text = text, longDuration = longDuration, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.OpenUrl -> Action.OpenUrl(url = url, targetPackage = targetPackage, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.CopyToClipboard -> Action.CopyToClipboard(text = text, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.GetClipboard -> Action.GetClipboard(intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.Vibrate -> Action.Vibrate(durationMs = durationMs, amplitude = amplitude, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.Tts -> Action.Tts(text = text, localeTag = localeTag, queue = queue, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.Math -> Action.Math(left = left, op = op, right = right, intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.StringTransform -> Action.StringTransform(input = input, op = op, arg1 = arg1, arg2 = arg2, intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.DateFormat -> Action.DateFormat(timestamp = timestamp, pattern = pattern, intoVar = intoVar, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.LockScreen -> Action.LockScreen(continueOnError = continueOnError, label = label)
+    is ActionSurrogate.SendSms -> Action.SendSms(phoneNumber = phoneNumber, body = body, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.SendWhatsApp -> Action.SendWhatsApp(phoneNumber = phoneNumber, body = body, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.SendTelegram -> Action.SendTelegram(recipient = recipient, body = body, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.SendEmail -> Action.SendEmail(to = to, subject = subject, body = body, cc = cc, bcc = bcc, continueOnError = continueOnError, label = label)
+    is ActionSurrogate.MqttPublish -> Action.MqttPublish(brokerUrl = brokerUrl, topic = topic, payload = payload, qos = qos, retained = retained, username = username, password = password, clientId = clientId, timeoutMs = timeoutMs, storeResponseInVar = storeResponseInVar, continueOnError = continueOnError, label = label)
 }
 
 /* ---------------------------------------------------------------------------------------------- */

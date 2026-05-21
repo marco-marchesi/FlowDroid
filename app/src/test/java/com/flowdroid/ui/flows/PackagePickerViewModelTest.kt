@@ -56,7 +56,7 @@ class PackagePickerViewModelTest {
         val vm = PackagePickerViewModel(repo)
         advanceUntilIdle()
 
-        vm.setQuery("FUB")
+        vm.setQuery("EXAMPLE")
         val r1 = vm.state.value as PackagePickerUiState.Ready
         assertThat(r1.items.map { it.packageName }).containsExactly("com.example.app")
 

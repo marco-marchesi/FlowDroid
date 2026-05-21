@@ -28,10 +28,13 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import com.flowdroid.data.settings.ConnectionSettingsRepository
+import com.flowdroid.data.settings.MqttProfile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -53,6 +56,7 @@ class SetupViewModel(
     private val notificationRepository: NotificationRepository,
     private val clock: Clock,
     private val selfTestNotifier: SelfTestNotifier,
+    private val connectionSettings: ConnectionSettingsRepository,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : ViewModel() {
 
@@ -67,17 +71,26 @@ class SetupViewModel(
         notificationRepository: NotificationRepository,
         clock: Clock,
         selfTestNotifier: SelfTestNotifier,
-    ) : this(permissionChecker, oemBatteryHelper, notificationRepository, clock, selfTestNotifier, Dispatchers.IO)
+        connectionSettings: ConnectionSettingsRepository,
+    ) : this(permissionChecker, oemBatteryHelper, notificationRepository, clock, selfTestNotifier, connectionSettings, Dispatchers.IO)
 
     private val brand: OemBrand = oemBatteryHelper.detect()
 
-    val state: StateFlow<SetupUiState> = permissionChecker.observe()
-        .map<PermissionSnapshot, SetupUiState> { snapshot -> SetupUiState.Ready(snapshot, brand) }
+    val state: StateFlow<SetupUiState> = combine(
+        permissionChecker.observe(),
+        connectionSettings.mqttProfile,
+    ) { snapshot, mqttProfile ->
+        SetupUiState.Ready(snapshot, brand, mqttProfile) as SetupUiState
+    }
         .catch { t -> emit(SetupUiState.Error(t.message ?: "Permission check failed")) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SetupUiState.Loading)
 
     fun refresh() {
         viewModelScope.launch { permissionChecker.refresh() }
+    }
+
+    fun saveMqttProfile(profile: MqttProfile) {
+        viewModelScope.launch { connectionSettings.saveMqttProfile(profile) }
     }
 
     fun resolveDeepLink(target: DeepLinkTarget): android.content.Intent? =
@@ -187,7 +200,11 @@ class DefaultSelfTestNotifier @Inject constructor(
 sealed interface SetupUiState {
     data object Loading : SetupUiState
     data class Error(val message: String) : SetupUiState
-    data class Ready(val snapshot: PermissionSnapshot, val brand: OemBrand) : SetupUiState
+    data class Ready(
+        val snapshot: PermissionSnapshot,
+        val brand: OemBrand,
+        val mqttProfile: MqttProfile = MqttProfile(),
+    ) : SetupUiState
 }
 
 /** Outcome of the listener self-test. */

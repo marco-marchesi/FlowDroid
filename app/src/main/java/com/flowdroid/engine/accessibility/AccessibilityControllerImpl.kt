@@ -244,6 +244,24 @@ class AccessibilityControllerImpl @Inject constructor(
         return Outcome.ok(Unit)
     }
 
+    override suspend fun lockScreen(): Outcome<Unit, AccessibilityError> = withService { service ->
+        val ok = try {
+            // GLOBAL_ACTION_LOCK_SCREEN — API 28+, always supported on minSdk 29.
+            service.performGlobalAction(
+                android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_LOCK_SCREEN,
+            )
+        } catch (t: Throwable) {
+            if (t is OutOfMemoryError) throw t
+            logger.warn(TAG, "lockScreen threw", t)
+            return@withService Outcome.err(
+                AccessibilityError.SystemFailure(t.message ?: "lockScreen threw"),
+            )
+        }
+        if (ok) Outcome.ok(Unit) else Outcome.err(
+            AccessibilityError.GestureFailed("performGlobalAction(LOCK_SCREEN) returned false"),
+        )
+    }
+
     // ============================================================================================
     // Internals
     // ============================================================================================

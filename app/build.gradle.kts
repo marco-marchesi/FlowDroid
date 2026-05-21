@@ -139,6 +139,9 @@ dependencies {
     // Embedded HTTP server for the webhook trigger. Tiny, sync API, well-tested.
     implementation(libs.nanohttpd)
 
+    // MQTT client — used by MqttPublish action and MqttSubscribe trigger.
+    implementation(libs.paho.mqtt)
+
     // Desugaring (java.time on API < 26 — we target 29+ but desugaring helps with edge APIs)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 

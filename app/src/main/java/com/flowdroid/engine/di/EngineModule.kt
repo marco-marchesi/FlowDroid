@@ -20,6 +20,21 @@ import com.flowdroid.engine.actions.IfExecutor
 import com.flowdroid.engine.actions.LoopExecutor
 import com.flowdroid.engine.actions.TryCatchExecutor
 import com.flowdroid.engine.actions.UnlockScreenExecutor
+import com.flowdroid.engine.actions.ToastExecutor
+import com.flowdroid.engine.actions.OpenUrlExecutor
+import com.flowdroid.engine.actions.CopyToClipboardExecutor
+import com.flowdroid.engine.actions.GetClipboardExecutor
+import com.flowdroid.engine.actions.VibrateExecutor
+import com.flowdroid.engine.actions.TtsExecutor
+import com.flowdroid.engine.actions.MathExecutor
+import com.flowdroid.engine.actions.StringTransformExecutor
+import com.flowdroid.engine.actions.DateFormatExecutor
+import com.flowdroid.engine.actions.LockScreenExecutor
+import com.flowdroid.engine.actions.SendSmsExecutor
+import com.flowdroid.engine.actions.SendWhatsAppExecutor
+import com.flowdroid.engine.actions.SendTelegramExecutor
+import com.flowdroid.engine.actions.SendEmailExecutor
+import com.flowdroid.engine.actions.MqttPublishExecutor
 import com.flowdroid.engine.actions.KillAppExecutor
 import com.flowdroid.engine.actions.LaunchAppExecutor
 import com.flowdroid.engine.actions.PostNotificationExecutor
@@ -190,4 +205,49 @@ abstract class EngineModule {
     abstract fun bindUnlockScreen(
         impl: UnlockScreenExecutor,
     ): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.Toast::class)
+    abstract fun bindToast(impl: ToastExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.OpenUrl::class)
+    abstract fun bindOpenUrl(impl: OpenUrlExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.CopyToClipboard::class)
+    abstract fun bindCopyToClipboard(impl: CopyToClipboardExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.GetClipboard::class)
+    abstract fun bindGetClipboard(impl: GetClipboardExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.Vibrate::class)
+    abstract fun bindVibrate(impl: VibrateExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.Tts::class)
+    abstract fun bindTts(impl: TtsExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.Math::class)
+    abstract fun bindMath(impl: MathExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.StringTransform::class)
+    abstract fun bindStringTransform(impl: StringTransformExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.DateFormat::class)
+    abstract fun bindDateFormat(impl: DateFormatExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.LockScreen::class)
+    abstract fun bindLockScreen(impl: LockScreenExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.SendSms::class)
+    abstract fun bindSendSms(impl: SendSmsExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.SendWhatsApp::class)
+    abstract fun bindSendWhatsApp(impl: SendWhatsAppExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.SendTelegram::class)
+    abstract fun bindSendTelegram(impl: SendTelegramExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.SendEmail::class)
+    abstract fun bindSendEmail(impl: SendEmailExecutor): ActionExecutor<*>
+
+    @Binds @IntoMap @ActionKey(Action.MqttPublish::class)
+    abstract fun bindMqttPublish(impl: MqttPublishExecutor): ActionExecutor<*>
 }

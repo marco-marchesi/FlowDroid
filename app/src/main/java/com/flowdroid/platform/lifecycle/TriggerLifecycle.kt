@@ -4,6 +4,7 @@ import com.flowdroid.common.StructuredLogger
 import com.flowdroid.common.flow.Flow
 import com.flowdroid.common.flow.FlowRepository
 import com.flowdroid.common.flow.Trigger
+import com.flowdroid.platform.mqtt.MqttSubscribeManager
 import com.flowdroid.platform.schedule.TimeScheduler
 import com.flowdroid.platform.webhook.WebhookServer
 import kotlinx.coroutines.CoroutineName
@@ -39,6 +40,7 @@ class TriggerLifecycle @Inject constructor(
     private val repository: FlowRepository,
     private val timeScheduler: TimeScheduler,
     private val webhookServer: WebhookServer,
+    private val mqttManager: MqttSubscribeManager,
     private val logger: StructuredLogger,
 ) {
 
@@ -108,16 +110,30 @@ class TriggerLifecycle @Inject constructor(
             logger.warn(TAG, "timeScheduler.arm failed", t, "flowId" to flow.id)
         }
         for (trigger in flow.triggers) {
-            if (trigger is Trigger.Webhook) {
-                try {
-                    webhookServer.register(flow.id, trigger)
-                } catch (t: Throwable) {
-                    if (t is OutOfMemoryError ||
-                        t is kotlin.coroutines.cancellation.CancellationException
-                    ) throw t
-                    logger.warn(TAG, "webhookServer.register failed", t,
-                        "flowId" to flow.id, "path" to trigger.path)
+            when (trigger) {
+                is Trigger.Webhook -> {
+                    try {
+                        webhookServer.register(flow.id, trigger)
+                    } catch (t: Throwable) {
+                        if (t is OutOfMemoryError ||
+                            t is kotlin.coroutines.cancellation.CancellationException
+                        ) throw t
+                        logger.warn(TAG, "webhookServer.register failed", t,
+                            "flowId" to flow.id, "path" to trigger.path)
+                    }
                 }
+                is Trigger.MqttSubscribe -> {
+                    try {
+                        mqttManager.register(flow.id, trigger)
+                    } catch (t: Throwable) {
+                        if (t is OutOfMemoryError ||
+                            t is kotlin.coroutines.cancellation.CancellationException
+                        ) throw t
+                        logger.warn(TAG, "mqttManager.register failed", t,
+                            "flowId" to flow.id, "broker" to trigger.brokerUrl)
+                    }
+                }
+                else -> { /* other trigger types handled elsewhere */ }
             }
         }
     }
@@ -134,6 +150,12 @@ class TriggerLifecycle @Inject constructor(
                 t is kotlin.coroutines.cancellation.CancellationException
             ) throw t
             logger.warn(TAG, "webhookServer.unregister failed", t, "flowId" to flowId)
+        }
+        try { mqttManager.unregister(flowId) } catch (t: Throwable) {
+            if (t is OutOfMemoryError ||
+                t is kotlin.coroutines.cancellation.CancellationException
+            ) throw t
+            logger.warn(TAG, "mqttManager.unregister failed", t, "flowId" to flowId)
         }
     }
 

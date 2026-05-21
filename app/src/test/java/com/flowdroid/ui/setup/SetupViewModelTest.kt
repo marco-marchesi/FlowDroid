@@ -9,6 +9,8 @@ import com.flowdroid.common.permission.OemSpecific
 import com.flowdroid.common.permission.PermissionChecker
 import com.flowdroid.common.permission.PermissionSnapshot
 import com.flowdroid.common.repo.NotificationRepository
+import com.flowdroid.data.settings.ConnectionSettingsRepository
+import com.flowdroid.data.settings.MqttProfile
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
@@ -33,6 +35,7 @@ class SetupViewModelTest {
     private lateinit var oemHelper: OemBatteryHelper
     private lateinit var notificationRepo: NotificationRepository
     private lateinit var notifier: SelfTestNotifier
+    private lateinit var connectionSettings: ConnectionSettingsRepository
     private val now = 1_700_000_000_000L
     private val clock = FakeClock(wallMillis = now)
 
@@ -42,6 +45,9 @@ class SetupViewModelTest {
         oemHelper = mockk()
         notificationRepo = mockk()
         notifier = mockk()
+        connectionSettings = mockk {
+            every { mqttProfile } returns MutableStateFlow(MqttProfile())
+        }
         every { oemHelper.detect() } returns OemBrand.SAMSUNG
         every { permissionChecker.observe() } returns MutableStateFlow(
             PermissionSnapshot(
@@ -75,7 +81,7 @@ class SetupViewModelTest {
         )
         every { notificationRepo.observeRecent(any()) } returns flow
 
-        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, dispatcher)
+        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, connectionSettings = connectionSettings, ioDispatcher = dispatcher)
 
         val results = vm.runSelfTest().toList()
         assertThat(results.first()).isEqualTo(SelfTestResult.InProgress)
@@ -90,7 +96,7 @@ class SetupViewModelTest {
         val stale = fakeNotif(SelfTestNotifier.SELF_TEST_TITLE, now - 10_000L)
         every { notificationRepo.observeRecent(any()) } returns MutableStateFlow(listOf(stale))
 
-        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, dispatcher)
+        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, connectionSettings = connectionSettings, ioDispatcher = dispatcher)
 
         val results = vm.runSelfTest().toList()
         assertThat(results.last()).isEqualTo(SelfTestResult.TimeoutOrNotReceived)
@@ -101,7 +107,7 @@ class SetupViewModelTest {
         // Repo emits no matching events for the duration of the test.
         every { notificationRepo.observeRecent(any()) } returns MutableStateFlow(emptyList())
 
-        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, dispatcher)
+        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, connectionSettings = connectionSettings, ioDispatcher = dispatcher)
 
         val results = vm.runSelfTest().toList()
         assertThat(results.first()).isEqualTo(SelfTestResult.InProgress)
@@ -112,7 +118,7 @@ class SetupViewModelTest {
         every { notifier.post(any()) } returns SelfTestPostOutcome.Failed("perm denied")
         every { notificationRepo.observeRecent(any()) } returns MutableStateFlow(emptyList())
 
-        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, dispatcher)
+        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, connectionSettings = connectionSettings, ioDispatcher = dispatcher)
 
         val results = vm.runSelfTest().toList()
         assertThat(results).hasSize(2)
@@ -122,7 +128,7 @@ class SetupViewModelTest {
     }
 
     @Test fun `state stream exposes Ready with permission snapshot`() = runTest(dispatcher) {
-        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, dispatcher)
+        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, connectionSettings = connectionSettings, ioDispatcher = dispatcher)
 
         vm.state.test {
             // Initial = Loading.
@@ -137,7 +143,7 @@ class SetupViewModelTest {
     }
 
     @Test fun `refresh calls through to PermissionChecker`() = runTest(dispatcher) {
-        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, dispatcher)
+        val vm = SetupViewModel(permissionChecker, oemHelper, notificationRepo, clock, notifier, connectionSettings = connectionSettings, ioDispatcher = dispatcher)
         vm.refresh()
         advanceTimeBy(10)
         io.mockk.verify { permissionChecker.refresh() }

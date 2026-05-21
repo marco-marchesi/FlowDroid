@@ -25,6 +25,8 @@ import com.flowdroid.common.flow.ExecutionError
 internal fun AccessibilityError.toExecutionError(): ExecutionError = when (this) {
     is AccessibilityError.ServiceNotBound ->
         ExecutionError.PermissionMissing("BIND_ACCESSIBILITY_SERVICE")
+    is AccessibilityError.PermissionMissing ->
+        ExecutionError.PermissionMissing("BIND_ACCESSIBILITY_SERVICE")
     is AccessibilityError.KeyguardDismissDenied ->
         ExecutionError.PermissionMissing("DISMISS_KEYGUARD")
     is AccessibilityError.NodeNotFound ->

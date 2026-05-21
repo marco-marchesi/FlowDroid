@@ -67,10 +67,17 @@ interface AccessibilityController {
      * that isn't drawn (lock screen, screen off).
      */
     suspend fun ensureScreenOnAndUnlocked(timeoutMs: Long = 5000L): Outcome<Unit, AccessibilityError>
+
+    /**
+     * Lock the device screen via `performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)`.
+     * Available since API 28 — we target 29+, so always supported.
+     */
+    suspend fun lockScreen(): Outcome<Unit, AccessibilityError>
 }
 
 sealed interface AccessibilityError {
     data object ServiceNotBound : AccessibilityError
+    data object PermissionMissing : AccessibilityError
     data class GestureFailed(val reason: String) : AccessibilityError
     data class NodeNotFound(val mode: UiTargetMode, val needle: String) : AccessibilityError
     data object NoFocusedEditableNode : AccessibilityError

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -37,7 +38,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import com.flowdroid.data.settings.MqttProfile
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -108,6 +113,7 @@ fun SetupRoute(viewModel: SetupViewModel = hiltViewModel()) {
         state = state,
         testResult = testResult,
         onRefresh = viewModel::refresh,
+        onSaveMqttProfile = viewModel::saveMqttProfile,
         onRequestPostNotifications = {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 postNotificationsLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -176,6 +182,7 @@ internal fun SetupScreen(
     onOpenOemAutostart: () -> Unit,
     onOpenExactAlarm: () -> Unit,
     onOpenAccessibility: () -> Unit,
+    onSaveMqttProfile: (MqttProfile) -> Unit = {},
 ) {
     Box(modifier = Modifier.fillMaxSize().testTag("setup_screen")) {
         when (state) {
@@ -184,6 +191,7 @@ internal fun SetupScreen(
             is SetupUiState.Ready -> ReadySetup(
                 snapshot = state.snapshot,
                 brand = state.brand,
+                mqttProfile = state.mqttProfile,
                 testResult = testResult,
                 onRequestPostNotifications = onRequestPostNotifications,
                 onOpenListenerSettings = onOpenListenerSettings,
@@ -193,6 +201,7 @@ internal fun SetupScreen(
                 onOpenOemAutostart = onOpenOemAutostart,
                 onOpenExactAlarm = onOpenExactAlarm,
                 onOpenAccessibility = onOpenAccessibility,
+                onSaveMqttProfile = onSaveMqttProfile,
             )
         }
     }
@@ -202,6 +211,7 @@ internal fun SetupScreen(
 private fun ReadySetup(
     snapshot: PermissionSnapshot,
     brand: OemBrand,
+    mqttProfile: MqttProfile,
     testResult: SelfTestResult?,
     onRequestPostNotifications: () -> Unit,
     onOpenListenerSettings: () -> Unit,
@@ -211,6 +221,7 @@ private fun ReadySetup(
     onOpenOemAutostart: () -> Unit,
     onOpenExactAlarm: () -> Unit,
     onOpenAccessibility: () -> Unit,
+    onSaveMqttProfile: (MqttProfile) -> Unit,
 ) {
     val steps = buildSteps(
         snapshot = snapshot,
@@ -233,6 +244,11 @@ private fun ReadySetup(
     ) {
         item { SummaryBanner(remaining = remaining, total = steps.count { it.status != StepStatus.NOT_APPLICABLE }) }
         items(items = steps, key = { it.id }) { step -> StepCard(step) }
+        item { Spacer(Modifier.height(4.dp)) }
+        item { ConnectionsSectionHeader() }
+        item { MqttConnectionCard(mqttProfile, onSaveMqttProfile) }
+        item { EmailConnectionCard() }
+        item { MessagingConnectionCard() }
     }
 }
 
@@ -501,6 +517,102 @@ private fun oemSatisfied(oem: OemSpecific): Boolean = when (oem) {
     is OemSpecific.Oppo -> oem.autostartConfigured && oem.backgroundFreezeDisabled
     is OemSpecific.Realme -> oem.autostartConfigured
     is OemSpecific.OnePlus -> oem.deepOptimisationDisabled
+}
+
+// --- Connections section -------------------------------------------------------
+
+@Composable
+private fun ConnectionsSectionHeader() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text("Connections", style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+        Text("configure once, reuse in flows", style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun MqttConnectionCard(saved: MqttProfile, onSave: (MqttProfile) -> Unit) {
+    var draft by remember(saved) { mutableStateOf(saved) }
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text("MQTT", style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold)
+            Text(
+                "Save your broker credentials here. Open any MQTT action or trigger and tap \"Apply saved\" to load them instantly.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            OutlinedTextField(
+                value = draft.brokerUrl,
+                onValueChange = { draft = draft.copy(brokerUrl = it) },
+                label = { Text("Broker URL") },
+                placeholder = { Text("ssl://….hivemq.cloud:8883") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+            OutlinedTextField(
+                value = draft.username,
+                onValueChange = { draft = draft.copy(username = it) },
+                label = { Text("Username") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+            OutlinedTextField(
+                value = draft.password,
+                onValueChange = { draft = draft.copy(password = it) },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                visualTransformation = PasswordVisualTransformation(),
+            )
+            OutlinedTextField(
+                value = draft.clientId,
+                onValueChange = { draft = draft.copy(clientId = it) },
+                label = { Text("Client ID (optional - blank = auto-generate)") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+            Button(
+                onClick = { onSave(draft) },
+                modifier = Modifier.align(Alignment.End),
+            ) { Text("Save") }
+        }
+    }
+}
+
+@Composable
+private fun EmailConnectionCard() {
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+        Column(Modifier.padding(16.dp)) {
+            Text("Email", style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "Email actions open your device's default mail app with To/Subject/Body pre-filled. No additional setup needed.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MessagingConnectionCard() {
+    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp)) {
+        Column(Modifier.padding(16.dp)) {
+            Text("WhatsApp & Telegram", style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                "These actions open the respective app via a deep link with a pre-filled message. The user taps Send. No extra configuration needed.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
 }
 
 // --- Previews -----------------------------------------------------------------

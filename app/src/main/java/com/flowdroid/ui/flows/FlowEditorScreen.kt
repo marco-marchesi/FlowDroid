@@ -4,6 +4,8 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -33,6 +35,8 @@ import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.UnfoldLess
+import androidx.compose.material.icons.filled.UnfoldMore
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import androidx.compose.material3.AlertDialog
@@ -75,6 +79,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -101,10 +106,14 @@ fun FlowEditorRoute(
     viewModel: FlowEditorViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val runStatusLabel by viewModel.runStatusLabel.collectAsStateWithLifecycle()
+    val savedMqttProfile by viewModel.savedMqttProfile.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
+    CompositionLocalProvider(LocalSavedMqttProfile provides savedMqttProfile) {
     FlowEditorScreen(
         state = state,
+        runStatusLabel = runStatusLabel,
         isNew = flowId == null,
         onBack = { navController.popBackStack() },
         onSave = {
@@ -125,13 +134,16 @@ fun FlowEditorRoute(
         onDuplicateAction = viewModel::duplicateActionAt,
         onMoveAction = viewModel::moveAction,
         onToggleActionCollapsed = viewModel::toggleActionCollapsed,
+        onToggleCollapseAll = viewModel::toggleCollapseAll,
     )
+    } // CompositionLocalProvider
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun FlowEditorScreen(
     state: FlowEditorUiState,
+    runStatusLabel: String? = null,
     isNew: Boolean,
     onBack: () -> Unit,
     onSave: () -> Unit,
@@ -147,6 +159,7 @@ internal fun FlowEditorScreen(
     onDuplicateAction: (Int) -> Unit = {},
     onMoveAction: (Int, Int) -> Unit = { _, _ -> },
     onToggleActionCollapsed: (Int) -> Unit = {},
+    onToggleCollapseAll: () -> Unit = {},
 ) {
     var confirmDiscard by remember { mutableStateOf(false) }
     var showAddSheet by remember { mutableStateOf(false) }
@@ -174,6 +187,19 @@ internal fun FlowEditorScreen(
                     ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
                 },
                 actions = {
+                    // Bulk collapse/expand toggle — one button instead of two so the toolbar
+                    // stays compact. Icon swaps to mirror current state.
+                    val allCollapsed = state.draft.triggers.indices.all { it in state.collapsedTriggers } &&
+                        state.draft.actions.indices.all { it in state.collapsedActions }
+                    IconButton(
+                        modifier = Modifier.testTag("flow_editor_collapse_toggle"),
+                        onClick = onToggleCollapseAll,
+                    ) {
+                        Icon(
+                            if (allCollapsed) Icons.Filled.UnfoldMore else Icons.Filled.UnfoldLess,
+                            contentDescription = if (allCollapsed) "Expand all" else "Collapse all",
+                        )
+                    }
                     FilledTonalButton(
                         modifier = Modifier.testTag("flow_editor_save"),
                         onClick = onSave,
@@ -184,6 +210,9 @@ internal fun FlowEditorScreen(
                     }
                 },
             )
+            // Status strip: pulled from FlowRunRepository in the VM (Phase 12 history → Phase
+            // 15 visible signal). Only shown for existing flows (new drafts have no runs yet).
+            RunStatusStrip(label = runStatusLabel, enabled = state.draft.enabled)
         },
     ) { padding ->
         val listState = rememberLazyListState()
@@ -240,6 +269,12 @@ internal fun FlowEditorScreen(
                         onDuplicate = { onDuplicateAction(index) },
                     )
                 }
+            }
+            // Trailing "+ Add action" button beneath the last card so the user doesn't have to
+            // scroll back to the ACTIONS section header to add one. Only render when there's at
+            // least one action — otherwise the header's own button is the obvious affordance.
+            if (state.draft.actions.isNotEmpty()) {
+                item { AddActionFooterButton(onAdd = { showAddSheet = true }) }
             }
             state.saveError?.let {
                 item {
@@ -453,6 +488,10 @@ private fun TriggerCard(
                         trigger = trigger,
                         onUpdate = onUpdate,
                     )
+                    is Trigger.MqttSubscribe -> MqttSubscribeFields(
+                        trigger = trigger,
+                        onUpdate = { onUpdate(it) },
+                    )
                     else -> Text("Unknown trigger type (${trigger::class.simpleName})")
                 }
             }
@@ -613,6 +652,26 @@ private fun ActionsHeader(onAdd: () -> Unit) {
     }
 }
 
+/**
+ * Trailing "+ Add action" button shown beneath the last action card. Mirrors the header's
+ * Add-action button so the user can drop a new action without scrolling back up.
+ */
+@Composable
+private fun AddActionFooterButton(onAdd: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        OutlinedButton(
+            modifier = Modifier.testTag("flow_editor_add_action_footer"),
+            onClick = onAdd,
+        ) {
+            Icon(Icons.Filled.Add, contentDescription = null)
+            Text(" Add action")
+        }
+    }
+}
+
 @Composable
 private fun ActionCard(
     index: Int,
@@ -696,7 +755,11 @@ private fun ActionCard(
                     onClick = onRemove,
                 ) { Icon(Icons.Filled.Close, contentDescription = "Remove action") }
             }
-            if (!collapsed) {
+            // While dragging, ONLY render the header — the heavy fields (HttpActionFields,
+            // recursive IfFields, etc.) are excluded from the composition so the reorderable
+            // library can move the card without re-measuring kilobytes of nested layout every
+            // frame. This was the source of the visible jerkiness Marco flagged on the A53.
+            if (!collapsed && !isDragging) {
                 Spacer(Modifier.height(8.dp))
                 LabelField(
                     value = action.label.orEmpty(),
@@ -719,10 +782,31 @@ private fun ActionCard(
                     is Action.WriteFile -> WriteFileFields(action, error, onUpdate)
                     is Action.Base64 -> Base64Fields(action, error, onUpdate)
                     is Action.Hash -> HashFields(action, error, onUpdate)
-                    is Action.If -> IfFields(action, error, onUpdate)
-                    is Action.Loop -> LoopFields(action, error, onUpdate)
-                    is Action.TryCatch -> TryCatchFields(action, onUpdate)
+                    is Action.If -> LogicBlockContainer(visuals.color) {
+                        IfFields(action, error, onUpdate)
+                    }
+                    is Action.Loop -> LogicBlockContainer(visuals.color) {
+                        LoopFields(action, error, onUpdate)
+                    }
+                    is Action.TryCatch -> LogicBlockContainer(visuals.color) {
+                        TryCatchFields(action, onUpdate)
+                    }
                     is Action.UnlockScreen -> UnlockScreenFields(action, onUpdate)
+                    is Action.LockScreen -> LockScreenFields(action, onUpdate)
+                    is Action.Toast -> ToastFields(action, onUpdate)
+                    is Action.OpenUrl -> OpenUrlFields(action, onUpdate)
+                    is Action.CopyToClipboard -> CopyToClipboardFields(action, onUpdate)
+                    is Action.GetClipboard -> GetClipboardFields(action, onUpdate)
+                    is Action.Vibrate -> VibrateFields(action, onUpdate)
+                    is Action.Tts -> TtsFields(action, onUpdate)
+                    is Action.Math -> MathFields(action, onUpdate)
+                    is Action.StringTransform -> StringTransformFields(action, onUpdate)
+                    is Action.DateFormat -> DateFormatFields(action, onUpdate)
+                    is Action.SendSms -> SendSmsFields(action, onUpdate)
+                    is Action.SendWhatsApp -> SendWhatsAppFields(action, onUpdate)
+                    is Action.SendTelegram -> SendTelegramFields(action, onUpdate)
+                    is Action.SendEmail -> SendEmailFields(action, onUpdate)
+                    is Action.MqttPublish -> MqttPublishFields(action, onUpdate)
                     else -> Text("Unknown action")
                 }
             }
@@ -1901,6 +1985,21 @@ private fun NestedActionCard(
                     is Action.Loop -> LoopFields(action, null, onUpdate)
                     is Action.TryCatch -> TryCatchFields(action, onUpdate)
                     is Action.UnlockScreen -> UnlockScreenFields(action, onUpdate)
+                    is Action.LockScreen -> LockScreenFields(action, onUpdate)
+                    is Action.Toast -> ToastFields(action, onUpdate)
+                    is Action.OpenUrl -> OpenUrlFields(action, onUpdate)
+                    is Action.CopyToClipboard -> CopyToClipboardFields(action, onUpdate)
+                    is Action.GetClipboard -> GetClipboardFields(action, onUpdate)
+                    is Action.Vibrate -> VibrateFields(action, onUpdate)
+                    is Action.Tts -> TtsFields(action, onUpdate)
+                    is Action.Math -> MathFields(action, onUpdate)
+                    is Action.StringTransform -> StringTransformFields(action, onUpdate)
+                    is Action.DateFormat -> DateFormatFields(action, onUpdate)
+                    is Action.SendSms -> SendSmsFields(action, onUpdate)
+                    is Action.SendWhatsApp -> SendWhatsAppFields(action, onUpdate)
+                    is Action.SendTelegram -> SendTelegramFields(action, onUpdate)
+                    is Action.SendEmail -> SendEmailFields(action, onUpdate)
+                    is Action.MqttPublish -> MqttPublishFields(action, onUpdate)
                     else -> Text("Unsupported action type")
                 }
             }
@@ -1921,6 +2020,84 @@ private fun humanCompareOp(op: com.flowdroid.common.flow.CompareOp): String = wh
     com.flowdroid.common.flow.CompareOp.LTE -> "less or equal (number)"
     com.flowdroid.common.flow.CompareOp.IS_BLANK -> "is blank"
     com.flowdroid.common.flow.CompareOp.IS_NOT_BLANK -> "is not blank"
+}
+
+/**
+ * Slim one-line status strip rendered directly under the editor's top app bar. Hidden when there
+ * are no runs to report (label = null) — keeps the toolbar uncluttered for brand-new drafts. The
+ * enabled-state dot reads from the current draft so flicking the switch updates it without
+ * waiting for the next save.
+ */
+@Composable
+private fun RunStatusStrip(label: String?, enabled: Boolean) {
+    if (label == null) return
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .testTag("flow_editor_status_strip"),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(
+                    color = if (enabled) com.flowdroid.ui.theme.StatusGreen
+                    else com.flowdroid.ui.theme.StatusUnknown,
+                    shape = CircleShape,
+                ),
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            if (enabled) "Enabled" else "Disabled",
+            style = MaterialTheme.typography.labelSmall,
+            color = if (enabled) com.flowdroid.ui.theme.StatusGreen
+            else MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            "•",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/**
+ * Tinted bordered container that wraps the field set of a logic action (If / Loop / TryCatch).
+ * Makes the special control-flow nature of these actions visually obvious — mirrors mockup 03d.
+ * The wrapper applies a 1-pixel outline in the family colour and a low-opacity fill from the
+ * same colour, so the inner field composables don't need to know they're inside a logic block.
+ */
+@Composable
+private fun LogicBlockContainer(
+    accent: Color,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = accent.copy(alpha = 0.06f),
+                shape = RoundedCornerShape(14.dp),
+            )
+            .border(
+                width = 1.dp,
+                color = accent.copy(alpha = 0.55f),
+                shape = RoundedCornerShape(14.dp),
+            )
+            .padding(horizontal = 10.dp, vertical = 12.dp),
+    ) {
+        Column { content() }
+    }
 }
 
 /** Family-colored circular badge shown at the top-left of every action card. */
@@ -2167,6 +2344,21 @@ private fun actionTypeLabel(action: Action): String = when (action) {
     is Action.Loop -> "Loop / Foreach"
     is Action.TryCatch -> "Try / Catch / Finally"
     is Action.UnlockScreen -> "Unlock screen"
+    is Action.LockScreen -> "Lock screen"
+    is Action.Toast -> "Toast"
+    is Action.OpenUrl -> "Open URL"
+    is Action.CopyToClipboard -> "Copy to clipboard"
+    is Action.GetClipboard -> "Get clipboard"
+    is Action.Vibrate -> "Vibrate"
+    is Action.Tts -> "Speak (TTS)"
+    is Action.Math -> "Math"
+    is Action.StringTransform -> "String transform"
+    is Action.DateFormat -> "Date format"
+    is Action.SendSms -> "Send SMS"
+    is Action.SendWhatsApp -> "Send WhatsApp"
+    is Action.SendTelegram -> "Send Telegram"
+    is Action.SendEmail -> "Send email"
+    is Action.MqttPublish -> "MQTT publish"
     else -> "Custom action"
 }
 
@@ -2194,6 +2386,21 @@ private fun Action.withLabel(label: String?): Action = when (this) {
     is Action.Loop -> copy(label = label)
     is Action.TryCatch -> copy(label = label)
     is Action.UnlockScreen -> copy(label = label)
+    is Action.LockScreen -> copy(label = label)
+    is Action.Toast -> copy(label = label)
+    is Action.OpenUrl -> copy(label = label)
+    is Action.CopyToClipboard -> copy(label = label)
+    is Action.GetClipboard -> copy(label = label)
+    is Action.Vibrate -> copy(label = label)
+    is Action.Tts -> copy(label = label)
+    is Action.Math -> copy(label = label)
+    is Action.StringTransform -> copy(label = label)
+    is Action.DateFormat -> copy(label = label)
+    is Action.SendSms -> copy(label = label)
+    is Action.SendWhatsApp -> copy(label = label)
+    is Action.SendTelegram -> copy(label = label)
+    is Action.SendEmail -> copy(label = label)
+    is Action.MqttPublish -> copy(label = label)
     else -> this
 }
 
@@ -2202,6 +2409,7 @@ private fun triggerTypeLabel(trigger: Trigger): String = when (trigger) {
     is Trigger.TimeOfDay -> "Time of day"
     is Trigger.Interval -> "Interval"
     is Trigger.Webhook -> "Webhook"
+    is Trigger.MqttSubscribe -> "MQTT subscribe"
     else -> "Custom trigger"
 }
 
@@ -2210,6 +2418,7 @@ private fun Trigger.withLabel(label: String?): Trigger = when (this) {
     is Trigger.TimeOfDay -> copy(label = label)
     is Trigger.Interval -> copy(label = label)
     is Trigger.Webhook -> copy(label = label)
+    is Trigger.MqttSubscribe -> copy(label = label)
     else -> this
 }
 
@@ -2218,6 +2427,7 @@ private fun triggerCatalogIdFor(trigger: Trigger): String = when (trigger) {
     is Trigger.TimeOfDay -> "time_of_day"
     is Trigger.Interval -> "interval"
     is Trigger.Webhook -> "webhook"
+    is Trigger.MqttSubscribe -> "mqtt_subscribe"
     else -> ""
 }
 
@@ -2534,30 +2744,55 @@ private fun AddActionSheet(
     onPick: (Action) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    // skipPartiallyExpanded = true → the sheet opens full-height immediately, so all entries
-    // (NETWORK + VARIABLES families included) are accessible without needing to drag up.
+    // skipPartiallyExpanded = true → the sheet opens full-height immediately, so the tile grid
+    // (8 families) renders without a drag-up.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var query by remember { mutableStateOf("") }
-    val filtered = remember(query) { ActionCatalog.searchActions(query) }
-    val grouped = remember(filtered) { filtered.groupBy { it.family } }
+    // null = top-level family grid; non-null = drilled into that family's actions.
+    var focusedFamily by remember { mutableStateOf<ActionCatalog.ActionFamily?>(null) }
+
+    // When the user types, the search overrides the family drill-down and matches across all.
+    val filtered = remember(query, focusedFamily) {
+        when {
+            query.isNotBlank() -> ActionCatalog.searchActions(query)
+            focusedFamily != null -> ActionCatalog.actions.filter { it.family == focusedFamily }
+            else -> emptyList()
+        }
+    }
+    val showingGrid = query.isBlank() && focusedFamily == null
 
     ModalBottomSheet(
         modifier = Modifier.testTag("flow_editor_add_sheet"),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
     ) {
-        // Vertically scrollable so families below the fold remain reachable on small screens.
         Column(
             modifier = Modifier
                 .padding(bottom = 24.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
-            Text(
-                "Add action",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (!showingGrid) {
+                    IconButton(
+                        modifier = Modifier.testTag("flow_editor_add_sheet_back"),
+                        onClick = {
+                            // Clear both — return to the grid.
+                            query = ""
+                            focusedFamily = null
+                        },
+                    ) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
+                }
+                Text(
+                    text = focusedFamily?.label ?: "Add action",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
@@ -2570,35 +2805,144 @@ private fun AddActionSheet(
             )
             Spacer(Modifier.height(8.dp))
 
-            if (grouped.isEmpty()) {
-                Text(
+            when {
+                showingGrid -> FamilyTileGrid(
+                    onPickFamily = { focusedFamily = it },
+                )
+                filtered.isEmpty() -> Text(
                     "No actions match \"$query\".",
                     modifier = Modifier.padding(16.dp).testTag("flow_editor_add_sheet_empty"),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            } else {
-                // Iterate families in catalog order so the UI is stable.
-                ActionCatalog.ActionFamily.entries.forEach { family ->
-                    val entries = grouped[family] ?: return@forEach
-                    FamilyHeader(family.label, "family_${family.name}")
-                    entries.forEach { entry ->
-                        ListItem(
-                            modifier = Modifier.testTag("add_action_${entry.id}"),
-                            headlineContent = { Text(entry.name) },
-                            supportingContent = { Text(entry.description) },
-                            trailingContent = {
-                                TextButton(
-                                    modifier = Modifier.testTag("add_action_${entry.id}_pick"),
-                                    onClick = { onPick(entry.factory()) },
-                                ) { Text("Add") }
-                            },
-                        )
-                    }
-                    HorizontalDivider()
-                }
+                else -> FlatActionList(filtered, onPick)
             }
         }
+    }
+}
+
+@Composable
+private fun FamilyTileGrid(
+    onPickFamily: (ActionCatalog.ActionFamily) -> Unit,
+) {
+    // Cheap stats: number of catalog entries per family, shown as a small counter on each tile.
+    val countByFamily = remember {
+        ActionCatalog.actions.groupingBy { it.family }.eachCount()
+    }
+    // 2-column grid implemented as 4 Rows of 2 tiles each — fixed height, no nested scrolling
+    // conflict with the parent verticalScroll. Order matches the enum declaration in
+    // ActionCatalog so tile placement is stable.
+    val families = ActionCatalog.ActionFamily.entries
+    val rows = families.chunked(2)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        rows.forEach { rowFamilies ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                rowFamilies.forEach { family ->
+                    FamilyTile(
+                        family = family,
+                        count = countByFamily[family] ?: 0,
+                        modifier = Modifier.weight(1f),
+                        onClick = { onPickFamily(family) },
+                    )
+                }
+                // If row has one tile (odd count), pad with an empty cell for alignment.
+                if (rowFamilies.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun FamilyTile(
+    family: ActionCatalog.ActionFamily,
+    count: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val color = colorFor(family)
+    val glyph = glyphFor(family)
+    Box(
+        modifier = modifier
+            .testTag("family_tile_${family.name}")
+            .clickable(onClick = onClick)
+            .background(
+                color = color.copy(alpha = 0.10f),
+                shape = RoundedCornerShape(14.dp),
+            )
+            .border(
+                width = 1.dp,
+                color = color.copy(alpha = 0.40f),
+                shape = RoundedCornerShape(14.dp),
+            )
+            .padding(14.dp),
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .background(
+                        color = color.copy(alpha = 0.22f),
+                        shape = RoundedCornerShape(12.dp),
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(glyph, color = color, fontWeight = FontWeight.Bold)
+            }
+            Text(
+                family.label,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                "$count ${if (count == 1) "action" else "actions"}",
+                style = MaterialTheme.typography.labelSmall,
+                color = color,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FlatActionList(
+    entries: List<ActionCatalog.ActionEntry>,
+    onPick: (Action) -> Unit,
+) {
+    // When the user searched or drilled into a single family, render a flat ListItem stack.
+    // We do NOT group by family in the search results — the user is hunting a specific action
+    // and the family headers just add noise.
+    entries.forEach { entry ->
+        val accent = colorFor(entry.family)
+        ListItem(
+            modifier = Modifier.testTag("add_action_${entry.id}"),
+            leadingContent = {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(color = accent.copy(alpha = 0.22f), shape = CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(glyphFor(entry.family), color = accent, fontWeight = FontWeight.Bold)
+                }
+            },
+            headlineContent = { Text(entry.name) },
+            supportingContent = { Text(entry.description) },
+            trailingContent = {
+                TextButton(
+                    modifier = Modifier.testTag("add_action_${entry.id}_pick"),
+                    onClick = { onPick(entry.factory()) },
+                ) { Text("Add") }
+            },
+        )
+        HorizontalDivider()
     }
 }
 

@@ -5,16 +5,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.flowdroid.common.Clock
 import com.flowdroid.common.Outcome
+import com.flowdroid.common.domain.FlowRun
 import com.flowdroid.common.flow.Action
 import com.flowdroid.common.flow.Flow
 import com.flowdroid.common.flow.FlowRepository
 import com.flowdroid.common.flow.Trigger
+import com.flowdroid.common.repo.FlowRunRepository
+import com.flowdroid.data.settings.ConnectionSettingsRepository
+import com.flowdroid.data.settings.MqttProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.UUID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -31,8 +39,10 @@ import timber.log.Timber
 @HiltViewModel
 class FlowEditorViewModel @Inject constructor(
     private val repository: FlowRepository,
+    private val flowRunRepo: FlowRunRepository,
     private val clock: Clock,
     savedStateHandle: SavedStateHandle,
+    private val connectionSettings: ConnectionSettingsRepository,
 ) : ViewModel() {
 
     /** Optional ID from the nav arg "flowId". Null for a fresh flow. */
@@ -41,6 +51,32 @@ class FlowEditorViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(initialDraft(flowId))
     val state: StateFlow<FlowEditorUiState> = _state.asStateFlow()
+
+    /**
+     * Last-run summary string shown in the editor's status row, derived from
+     * [FlowRunRepository]. Null when the flow hasn't run yet (or this is a brand-new draft).
+     * Recomputed from the last 50 runs so the "N runs today" counter is accurate.
+     */
+    val runStatusLabel: StateFlow<String?> =
+        if (flowId == null) flowOf<String?>(null).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null,
+        )
+        else flowRunRepo.observeRecentForFlow(flowId, limit = 50)
+            .map { runs -> formatStatusLabel(runs, clock.nowMillis()) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = null,
+            )
+
+    val savedMqttProfile: StateFlow<MqttProfile> = connectionSettings.mqttProfile
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = MqttProfile(),
+        )
 
     init {
         if (flowId != null) loadExisting(flowId)
@@ -258,6 +294,35 @@ class FlowEditorViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Toolbar bulk action. If ANY trigger or action card is currently expanded, collapses all of
+     * them. Otherwise expands all. One toggle → one consistent state — simpler than two separate
+     * buttons and reads correctly regardless of the current mixed state.
+     */
+    fun toggleCollapseAll() {
+        _state.update {
+            val triggerCount = it.draft.triggers.size
+            val actionCount = it.draft.actions.size
+            val allTriggers = (0 until triggerCount).toSet()
+            val allActions = (0 until actionCount).toSet()
+            val anyExpanded = it.collapsedTriggers != allTriggers ||
+                it.collapsedActions != allActions
+            if (anyExpanded) {
+                // Collapse everything.
+                it.copy(
+                    collapsedTriggers = allTriggers,
+                    collapsedActions = allActions,
+                )
+            } else {
+                // Everything's already collapsed → expand all.
+                it.copy(
+                    collapsedTriggers = emptySet(),
+                    collapsedActions = emptySet(),
+                )
+            }
+        }
+    }
+
     private fun shiftIndicesAfterRemoval(collapsed: Set<Int>, removedIndex: Int): Set<Int> =
         collapsed.mapNotNull { i ->
             when {
@@ -410,6 +475,36 @@ class FlowEditorViewModel @Inject constructor(
         private fun EditorErrors.hasAny(): Boolean =
             nameError != null || triggersError != null || actionErrors.isNotEmpty()
     }
+}
+
+/**
+ * Build the editor's status-row text from the recent runs of this flow. Returns null when there
+ * are no runs to summarise. Format: `Last ran 5m ago · ✓ pass · 3 today` (the ✓ flips to ✗ when
+ * the most recent run failed). 50-run window is fine — `runs today` resolves correctly because
+ * runs older than today's midnight are filtered out.
+ */
+private fun formatStatusLabel(runs: List<FlowRun>, nowMillis: Long): String? {
+    val latest = runs.firstOrNull() ?: return null
+    val ageMillis = (nowMillis - latest.startedAtMillis).coerceAtLeast(0L)
+    val ageStr = when {
+        ageMillis < 60_000L -> "just now"
+        ageMillis < 3_600_000L -> "${ageMillis / 60_000L}m ago"
+        ageMillis < 24 * 3_600_000L -> "${ageMillis / 3_600_000L}h ago"
+        else -> "${ageMillis / (24 * 3_600_000L)}d ago"
+    }
+    val startOfDay = run {
+        val cal = java.util.Calendar.getInstance().apply {
+            timeInMillis = nowMillis
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        cal.timeInMillis
+    }
+    val today = runs.count { it.startedAtMillis >= startOfDay }
+    val verdict = if (latest.ok) "✓ pass" else "✗ ${latest.errorMessage?.take(40) ?: "fail"}"
+    return "Last ran $ageStr · $verdict · $today today"
 }
 
 /** Editable in-memory representation of a Flow. */

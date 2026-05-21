@@ -130,6 +130,31 @@ interface Trigger {
         val secret: String? = null,
         override val label: String? = null,
     ) : Trigger
+
+    /**
+     * Fire when an MQTT message arrives on a subscribed topic.
+     *
+     * The engine's [com.flowdroid.platform.mqtt.MqttSubscribeManager] maintains one persistent
+     * connection per unique `brokerUrl`. Topics use the standard MQTT wildcard notation:
+     *  - `+` matches a single level (e.g. `sensors/+/temperature`)
+     *  - `#` matches any number of levels, must be last (e.g. `home/#`)
+     *
+     * Magic-text bindings populated in the execution context:
+     *  - `{mqtt.topic}`, `{mqtt.payload}`, `{mqtt.qos}`
+     *
+     * @property payloadRegex  Optional: if non-blank, the message is only dispatched when the
+     *                         UTF-8 payload matches this regex.
+     */
+    data class MqttSubscribe(
+        val brokerUrl: String,
+        val topic: String,
+        val qos: Int = 0,
+        val username: String = "",
+        val password: String = "",
+        val clientId: String = "",
+        val payloadRegex: String = "",
+        override val label: String? = null,
+    ) : Trigger
 }
 
 enum class DayOfWeek { MON, TUE, WED, THU, FRI, SAT, SUN }
@@ -454,7 +479,188 @@ interface Action {
         override val continueOnError: Boolean = false,
         override val label: String? = null,
     ) : Action
+
+    // ── Phase 19 (Tasker-parity expansion) ─────────────────────────────────────────────────
+
+    /** Brief on-screen Toast. Magic-text expanded. */
+    data class Toast(
+        val text: String,
+        val longDuration: Boolean = false,
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /** Open a URL in the default browser (or a specific package via `targetPackage`). */
+    data class OpenUrl(
+        val url: String,
+        val targetPackage: String? = null,
+        override val continueOnError: Boolean = false,
+        override val label: String? = null,
+    ) : Action
+
+    /** Copy [text] (magic-text expanded) into the system clipboard. */
+    data class CopyToClipboard(
+        val text: String,
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /** Read the current clipboard text into `var.<intoVar>`. */
+    data class GetClipboard(
+        val intoVar: String,
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /**
+     * Vibrate for [durationMs] using a one-shot pulse (legacy `Vibrator.vibrate` shape). When
+     * [amplitude] is 0..255, the VibrationEffect is built with that amplitude on API 26+;
+     * pre-26 it falls back to default amplitude.
+     */
+    data class Vibrate(
+        val durationMs: Long = 250L,
+        val amplitude: Int = -1, // -1 = default amplitude
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /** Speak [text] via TextToSpeech. Locale defaults to device's default locale. */
+    data class Tts(
+        val text: String,
+        val localeTag: String? = null, // e.g. "en", "it-IT"
+        val queue: TtsQueueMode = TtsQueueMode.ADD,
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /**
+     * Arithmetic operation between [left] and [right] (both magic-text expanded → parsed as
+     * Double; non-numeric input is treated as 0). Result written to `var.<intoVar>` with [op]
+     * applied; division by zero stores "0".
+     */
+    data class Math(
+        val left: String,
+        val op: MathOp,
+        val right: String,
+        val intoVar: String,
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /** Apply a string transform to [input] (magic-text expanded), store result in [intoVar]. */
+    data class StringTransform(
+        val input: String,
+        val op: StringOp,
+        /** Used by REPLACE / SUBSTRING; ignored otherwise. */
+        val arg1: String = "",
+        /** Used by REPLACE (replacement) / SUBSTRING (end index); ignored otherwise. */
+        val arg2: String = "",
+        val intoVar: String,
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /**
+     * Format a Unix-millis timestamp [timestamp] (magic-text expanded → parsed as Long; default
+     * = now if unparseable) with a SimpleDateFormat [pattern]. Output written to `var.<intoVar>`.
+     */
+    data class DateFormat(
+        val timestamp: String = "",
+        val pattern: String = "yyyy-MM-dd HH:mm:ss",
+        val intoVar: String,
+        override val continueOnError: Boolean = true,
+        override val label: String? = null,
+    ) : Action
+
+    /** Lock the device screen via Accessibility's `performGlobalAction(GLOBAL_ACTION_LOCK_SCREEN)`. */
+    data class LockScreen(
+        override val continueOnError: Boolean = false,
+        override val label: String? = null,
+    ) : Action
+
+    /**
+     * Send an SMS. Requires runtime `SEND_SMS` (dangerous) — user must grant via system settings
+     * BEFORE running the flow. Body is split via `SmsManager.divideMessage` for multipart sends.
+     */
+    data class SendSms(
+        val phoneNumber: String,
+        val body: String,
+        override val continueOnError: Boolean = false,
+        override val label: String? = null,
+    ) : Action
+
+    /**
+     * Open WhatsApp with a pre-filled message via the `wa.me/<phone>` deep link. WhatsApp
+     * deliberately blocks fully-automated send — user still taps the send button. Phone in
+     * international form WITHOUT leading `+` (e.g. `4915123456789`).
+     */
+    data class SendWhatsApp(
+        val phoneNumber: String,
+        val body: String,
+        override val continueOnError: Boolean = false,
+        override val label: String? = null,
+    ) : Action
+
+    /**
+     * Open Telegram with a pre-filled message. [recipient] = `@username` (no @) OR phone number.
+     * Telegram blocks headless send — user taps Send. Uses `tg://msg?text=…&to=@…` URI.
+     */
+    data class SendTelegram(
+        val recipient: String,
+        val body: String,
+        override val continueOnError: Boolean = false,
+        override val label: String? = null,
+    ) : Action
+
+    /**
+     * Compose an email via [android.content.Intent.ACTION_SENDTO] + `mailto:` URI. Opens the
+     * user's default email app with To/Cc/Bcc/Subject/Body pre-filled. No permission needed.
+     */
+    data class SendEmail(
+        val to: String,
+        val subject: String = "",
+        val body: String = "",
+        val cc: String = "",
+        val bcc: String = "",
+        override val continueOnError: Boolean = false,
+        override val label: String? = null,
+    ) : Action
+
+    // ── Phase 20 (MQTT) ─────────────────────────────────────────────────────────────────────
+
+    /**
+     * Publish an MQTT message.
+     *
+     * @property brokerUrl   e.g. "tcp://192.168.1.10:1883" or "ssl://broker.hivemq.com:8883".
+     * @property topic       MQTT topic string. Magic-text expanded.
+     * @property payload     Message body. Magic-text expanded. Encoded as UTF-8.
+     * @property qos         Quality-of-service level: 0 (at most once), 1 (at least once), 2 (exactly once).
+     * @property retained    Whether the broker should retain the last message on this topic.
+     * @property username    Optional broker username. Magic-text expanded.
+     * @property password    Optional broker password. Magic-text expanded. Redacted in logs.
+     * @property clientId    MQTT client ID. Blank = auto-generate.
+     * @property timeoutMs   Connection + publish timeout.
+     * @property storeResponseInVar  If non-blank, writes "ok" to this var on success (allows TryCatch to detect failure).
+     */
+    data class MqttPublish(
+        val brokerUrl: String,
+        val topic: String,
+        val payload: String = "",
+        val qos: Int = 0,
+        val retained: Boolean = false,
+        val username: String = "",
+        val password: String = "",
+        val clientId: String = "",
+        val timeoutMs: Long = 10_000L,
+        val storeResponseInVar: String = "",
+        override val continueOnError: Boolean = false,
+        override val label: String? = null,
+    ) : Action
 }
+
+enum class TtsQueueMode { ADD, FLUSH }
+enum class MathOp { ADD, SUBTRACT, MULTIPLY, DIVIDE, MODULO, POWER }
+enum class StringOp { UPPER, LOWER, TRIM, REPLACE, SUBSTRING, LENGTH, REVERSE }
 
 enum class LoopMode { COUNT, FOREACH_LINES }
 

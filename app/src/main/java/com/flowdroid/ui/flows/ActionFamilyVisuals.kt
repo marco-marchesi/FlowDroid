@@ -20,20 +20,22 @@ import com.flowdroid.ui.theme.FamilyVariables
 data class ActionVisuals(val color: Color, val glyph: String)
 
 fun visualsFor(action: Action): ActionVisuals = when (action) {
-    is Action.ClickNotificationAction, is Action.PostNotification ->
+    is Action.ClickNotificationAction, is Action.PostNotification, is Action.Toast, is Action.Tts ->
         ActionVisuals(FamilyNotifications, "🔔")
-    is Action.LaunchApp, is Action.KillApp ->
+    is Action.LaunchApp, is Action.KillApp, is Action.OpenUrl ->
         ActionVisuals(FamilyApps, "📱")
     is Action.UiClick, is Action.UiSwipe, is Action.UiTypeText, is Action.UiPressKey,
-    is Action.UnlockScreen ->
+    is Action.UnlockScreen, is Action.LockScreen, is Action.Vibrate ->
         ActionVisuals(FamilyUi, "☝")
     is Action.Delay ->
         ActionVisuals(FamilyTiming, "⏱")
-    is Action.Http ->
+    is Action.Http, is Action.SendSms, is Action.SendWhatsApp, is Action.SendTelegram,
+    is Action.SendEmail, is Action.MqttPublish ->
         ActionVisuals(FamilyNetwork, "🌐")
-    is Action.SetVariable ->
+    is Action.SetVariable, is Action.Math, is Action.StringTransform, is Action.DateFormat ->
         ActionVisuals(FamilyVariables, "𝑥")
-    is Action.ReadFile, is Action.WriteFile, is Action.Base64, is Action.Hash ->
+    is Action.ReadFile, is Action.WriteFile, is Action.Base64, is Action.Hash,
+    is Action.CopyToClipboard, is Action.GetClipboard ->
         ActionVisuals(FamilyData, "🗎")
     is Action.If, is Action.Loop, is Action.TryCatch ->
         ActionVisuals(FamilyLogic, "⌥")
@@ -46,6 +48,7 @@ fun visualsFor(trigger: Trigger): ActionVisuals = when (trigger) {
     is Trigger.TimeOfDay -> ActionVisuals(FamilyTiming, "⏱")
     is Trigger.Interval -> ActionVisuals(FamilyTiming, "↻")
     is Trigger.Webhook -> ActionVisuals(FamilyNetwork, "🌐")
+    is Trigger.MqttSubscribe -> ActionVisuals(FamilyNetwork, "⇆")
     else -> ActionVisuals(FamilyLogic, "·")
 }
 

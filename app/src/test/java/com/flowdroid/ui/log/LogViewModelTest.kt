@@ -132,7 +132,7 @@ class LogViewModelTest {
             assertThat(awaitItem()).isEmpty()  // initial
             assertThat(awaitItem().map { it.id }).containsExactly(1L, 2L)
 
-            vm.setNotificationQuery("ECHO")
+            vm.setNotificationQuery("EXAMPLE")
             assertThat(awaitItem().map { it.id }).containsExactly(1L)
 
             vm.setNotificationQuery("stand")  // matches title

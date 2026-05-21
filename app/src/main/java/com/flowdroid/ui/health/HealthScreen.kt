@@ -143,16 +143,8 @@ private fun ReadyContent(state: HealthUiState.Ready, onSelfTest: () -> Unit) {
                 )
             }
         }
-        item {
-            Button(
-                modifier = Modifier.fillMaxWidth().testTag("health_selftest_button"),
-                onClick = onSelfTest,
-            ) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                Spacer(Modifier.size(8.dp))
-                Text("Run self-test")
-            }
-        }
+        // Run-self-test button removed — was not reliably functioning on production builds.
+        // (Re-add once the test wiring is fixed; see notes in SetupViewModel.runSelfTest.)
     }
 }
 

@@ -439,6 +439,11 @@ class FlowEngineImpl(
             is TriggerEvent.NotificationFired -> populateNotifVars(v, event.event)
             is TriggerEvent.ScheduledTime -> populateTimeVars(v, event)
             is TriggerEvent.WebhookReceived -> populateWebhookVars(v, event)
+            is TriggerEvent.MqttMessage -> {
+                v["mqtt.topic"] = event.topic
+                v["mqtt.payload"] = event.payload
+                v["mqtt.qos"] = event.qos.toString()
+            }
         }
         return v
     }
