@@ -12,7 +12,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.flowdroid"
+        applicationId = "io.flowdroid.app"
         minSdk = 29
         targetSdk = 35
         versionCode = 1
