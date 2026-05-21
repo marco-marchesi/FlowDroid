@@ -23,9 +23,10 @@
     <!-- Wake locks: foreground service heartbeat occasionally needs short wakelocks. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!-- Schedule exact alarms (used later for time triggers; declared now to surface permission early) -->
+    <!-- Schedule exact alarms for time triggers. SCHEDULE_EXACT_ALARM requires the user to grant
+         permission via Settings → Special app access → Alarms & reminders. USE_EXACT_ALARM is
+         restricted to alarm-clock/calendar apps by Play policy, so we do NOT declare it. -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <!-- Internet for HTTP actions (Phase 1+) -->
     <uses-permission android:name="android.permission.INTERNET" />

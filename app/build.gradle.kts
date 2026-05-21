@@ -22,6 +22,24 @@ android {
         vectorDrawables.useSupportLibrary = true
     }
 
+    // Read signing credentials from keystore.properties (never committed — add to .gitignore).
+    // Fallback to debug signing when the file is absent (CI without secrets, local dev).
+    val keystorePropsFile = rootProject.file("keystore.properties")
+    val keystoreProps = java.util.Properties().apply {
+        if (keystorePropsFile.exists()) load(keystorePropsFile.inputStream())
+    }
+
+    signingConfigs {
+        if (keystorePropsFile.exists()) {
+            create("release") {
+                keyAlias     = keystoreProps["keyAlias"]     as String
+                keyPassword  = keystoreProps["keyPassword"]  as String
+                storeFile    = file(keystoreProps["storeFile"] as String)
+                storePassword = keystoreProps["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -35,6 +53,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (keystorePropsFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
