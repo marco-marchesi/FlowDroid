@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Full / sideload flavor — adds SEND_SMS which is restricted on Play Store. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- SendSms action. Dangerous permission — user must grant at runtime via
+         Settings → Apps → FlowDroid → Permissions → SMS. The executor surfaces
+         a clear error when the permission is denied rather than silently failing. -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+</manifest>

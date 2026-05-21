@@ -40,6 +40,19 @@ android {
         }
     }
 
+    flavorDimensions += "distribution"
+    productFlavors {
+        // Upload this to Google Play Store — no restricted SMS permission.
+        create("playStore") {
+            dimension = "distribution"
+        }
+        // Sideload / direct APK — includes SEND_SMS action.
+        create("full") {
+            dimension = "distribution"
+            versionNameSuffix = "-full"
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false

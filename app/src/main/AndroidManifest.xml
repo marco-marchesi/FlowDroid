@@ -35,11 +35,6 @@
     <!-- Vibration (used in Phase 1; declared early for self-test) -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- Phase 19: SendSms action. Dangerous permission — user must grant at runtime via system
-         Settings → Apps → FlowDroid → Permissions → SMS. The action surfaces a clear error
-         when the permission is missing rather than silently failing. -->
-    <uses-permission android:name="android.permission.SEND_SMS" />
-
     <!-- Phase 2: KillApp action uses ActivityManager.killBackgroundProcesses -->
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
 
